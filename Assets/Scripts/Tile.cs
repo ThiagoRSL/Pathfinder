@@ -23,7 +23,6 @@ public class Tile : MonoBehaviour
             this.SetElevation(0);
         }
         this._grid = grid;
-        this.cost = Mathf.infinity;
     }
     public void UnselectTile()
     {

@@ -14,7 +14,6 @@ public class Player : MonoBehaviour
         this.SetColor(new Color(Random.Range(0, 255), Random.Range(0, 255), Random.Range(0, 255)));
         this._grid = grid;
         this._atTile = tileInit;
-        tileInte.
         Debug.Log(this._atTile);
         this.transform.position = this._atTile.GetPosition() + new Vector3(0,0,1);
     }

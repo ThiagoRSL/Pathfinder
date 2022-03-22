@@ -62,6 +62,8 @@ public class GridManager : MonoBehaviour
         if(this._selectedTile) this._selectedTile.UnselectTile();
         this._selectedTile = this.GetTileAtPosition(position);
         this._selectedTile.SelectTile();
+        DijkstraManager dm = new DijkstraManager(this);
+        Debug.Log(dm.Dijkstra(new Vector2(0, 0), this._selectedTile.GetPosition()));
     }
     public float GetHeight()
     {
