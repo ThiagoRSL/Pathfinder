@@ -10,11 +10,9 @@ public class GridManager : MonoBehaviour
     [SerializeField] private Transform _cam;
     [SerializeField] private Dictionary<Vector3, Tile> _tiles;
     private Player player;
-    private List<Tile> shortestPath;
 
     private void Start()
     {
-        shortestPath = null;
         this.CreateGrid();
         this.SetPlayer();
     }
@@ -60,24 +58,11 @@ public class GridManager : MonoBehaviour
 
     public void SetSelectedTile(Vector2 position)
     {
-        if(this.shortestPath != null)
-        {
-            foreach (var tile in this.shortestPath)
-            {
-                tile.Highlight(false);
-            }
-        }
         if (this._selectedTile) this._selectedTile.UnselectTile();
         this._selectedTile = this.GetTileAtPosition(position);
         this._selectedTile.SelectTile();
         DijkstraManager dm = new DijkstraManager(this);
-
-        Debug.Log(this.player.atTile);
-        this.shortestPath = dm.Dijkstra(this.player.atTile.GetPosition(), this._selectedTile.GetPosition());
-        foreach (var tile in this.shortestPath)
-        {
-            tile.Highlight(true);
-        }
+        this.player.SetPath(dm.Dijkstra(this.player.atTile.GetPosition(), this._selectedTile.GetPosition()));
 
     }
     public float GetHeight()

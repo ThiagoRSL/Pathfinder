@@ -7,10 +7,12 @@ public class Player : MonoBehaviour
     [SerializeField] private SpriteRenderer _renderer;
     [SerializeField] private Tile _targetTile;
     [SerializeField] public Tile atTile;
+    private List<Tile> path;
     private GridManager _grid;
 
     public void Init(Tile tileInit, GridManager grid)
     {
+        this.path = null;
         this._grid = grid;
         this.atTile = tileInit;
         this.transform.position = this.atTile.GetPosition() + new Vector3(0,0,1);
@@ -25,6 +27,21 @@ public class Player : MonoBehaviour
     {
         this._targetTile = this._grid.GetTileAtPosition(targetPosition);
         this.Move();
+    }
+    public void SetPath(List<Tile> path)
+    {
+        if (this.path != null)
+        {
+            foreach (var tile in this.path)
+            {
+                tile.Highlight(false);
+            }
+        }
+        this.path = path;
+        foreach (var tile in this.path)
+        {
+            tile.Highlight(true);
+        }
     }
     public void Move()
     {
