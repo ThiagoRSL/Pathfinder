@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class GridManager : MonoBehaviour
 {
-    [SerializeField] private int _width, _height, _level;
+    [SerializeField] public int _width, _height, _level;
     [SerializeField] private Tile _tilePreFab, _selectedTile;
     [SerializeField] private Player _playerPreFab;
     [SerializeField] private Transform _cam;
     [SerializeField] private Dictionary<Vector3, Tile> _tiles;
-    private Player player;
+    public Player player;
 
     private void Start()
     {
@@ -42,7 +42,6 @@ public class GridManager : MonoBehaviour
     public void SetPlayer()
     {
         Tile playerTile = this.GetTileAtPosition(new Vector3(Random.Range(0, this._width), Random.Range(0, this._height)));
-        Debug.Log(playerTile);
         this.player = Instantiate(this._playerPreFab, playerTile.GetPosition() + new Vector3(0, 0, 1), Quaternion.identity);
         this.player.Init(playerTile, this);
     }
@@ -63,6 +62,7 @@ public class GridManager : MonoBehaviour
         this._selectedTile.SelectTile();
         DijkstraManager dm = new DijkstraManager(this);
         this.player.SetPath(dm.Dijkstra(this.player.atTile.GetPosition(), this._selectedTile.GetPosition()));
+        dm = null;
 
     }
     public float GetHeight()

@@ -17,7 +17,6 @@ public class Player : MonoBehaviour
         this.atTile = tileInit;
         this.transform.position = this.atTile.GetPosition() + new Vector3(0,0,1);
         this.SetColor(new Color(Random.Range(0, 255), Random.Range(0, 255), Random.Range(0, 255)));
-        Debug.Log(this.atTile);
     }
     public void SetColor(Color color)
     {
@@ -41,6 +40,7 @@ public class Player : MonoBehaviour
         foreach (var tile in this.path)
         {
             tile.Highlight(true);
+            Debug.Log(tile);
         }
     }
     public void Move()
