@@ -5,17 +5,16 @@ using UnityEngine;
 public class GridManager : MonoBehaviour
 {
     [SerializeField] private int _width, _height, _level;
-
     [SerializeField] private Tile _tilePreFab, _selectedTile;
-
-    [SerializeField] private Player _player;
-
+    [SerializeField] private Player _playerPreFab;
     [SerializeField] private Transform _cam;
-
     [SerializeField] private Dictionary<Vector3, Tile> _tiles;
+    private Player player;
+    private List<Tile> shortestPath;
 
     private void Start()
     {
+        shortestPath = null;
         this.CreateGrid();
         this.SetPlayer();
     }
@@ -44,8 +43,10 @@ public class GridManager : MonoBehaviour
 
     public void SetPlayer()
     {
-        var player = Instantiate(this._player, (this.GetTileAtPosition(new Vector3(Random.Range(0, this._width), Random.Range(0, this._height))).GetPosition() + new Vector3(0,0,1)), Quaternion.identity);
-       // player.Init(this.GetTileAtPosition(new Vector2(Random.Range(0, this._width), Random.Range(0, this._height))), this);
+        Tile playerTile = this.GetTileAtPosition(new Vector3(Random.Range(0, this._width), Random.Range(0, this._height)));
+        Debug.Log(playerTile);
+        this.player = Instantiate(this._playerPreFab, playerTile.GetPosition() + new Vector3(0, 0, 1), Quaternion.identity);
+        this.player.Init(playerTile, this);
     }
 
     public Tile GetTileAtPosition(Vector2 position)
@@ -59,11 +60,25 @@ public class GridManager : MonoBehaviour
 
     public void SetSelectedTile(Vector2 position)
     {
-        if(this._selectedTile) this._selectedTile.UnselectTile();
+        if(this.shortestPath != null)
+        {
+            foreach (var tile in this.shortestPath)
+            {
+                tile.Highlight(false);
+            }
+        }
+        if (this._selectedTile) this._selectedTile.UnselectTile();
         this._selectedTile = this.GetTileAtPosition(position);
         this._selectedTile.SelectTile();
         DijkstraManager dm = new DijkstraManager(this);
-        Debug.Log(dm.Dijkstra(new Vector2(0, 0), this._selectedTile.GetPosition()));
+
+        Debug.Log(this.player.atTile);
+        this.shortestPath = dm.Dijkstra(this.player.atTile.GetPosition(), this._selectedTile.GetPosition());
+        foreach (var tile in this.shortestPath)
+        {
+            tile.Highlight(true);
+        }
+
     }
     public float GetHeight()
     {

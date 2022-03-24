@@ -109,17 +109,17 @@ public class DijkstraManager
                     this.vertexes[i, j].east = arris;
                     this.vertexes[i + 1, j].west = arris;
                 }
-                if (this.vertexes[i, j].north == null && j > 0)
-                {
-                    Arris arris = new Arris(this.vertexes[i, j], this.vertexes[i,j - 1]);
-                    this.vertexes[i, j].north = arris;
-                    this.vertexes[i, j - 1].south = arris;
-                }
-                if (this.vertexes[i, j].south == null && j < (height - 1))
+                if (this.vertexes[i, j].north == null && j < (height - 1))
                 {
                     Arris arris = new Arris(this.vertexes[i, j], this.vertexes[i,j + 1]);
+                    this.vertexes[i, j].north = arris;
+                    this.vertexes[i, j + 1].south = arris;
+                }
+                if (this.vertexes[i, j].south == null && j > 0)
+                {
+                    Arris arris = new Arris(this.vertexes[i, j], this.vertexes[i,j - 1]);
                     this.vertexes[i, j].south = arris;
-                    this.vertexes[i,j + 1].north = arris;
+                    this.vertexes[i,j - 1].north = arris;
                 }
             }
         }
@@ -140,18 +140,16 @@ public class DijkstraManager
         }
     }
 
-    public List<Tile> Dijkstra(Vector2 originCord, Vector2 targetCord)
+    public List<Tile> Dijkstra(Vector3 originCord, Vector3 targetCord)
     {
         float width = (int)this.grid.GetWidth();
         Vertex target = this.vertexes[(int)targetCord.x,(int)targetCord.y];
         this.InitializeList();
 
         this.AuxiliarList[(int)((originCord.x * width) + originCord.y)].totalCost = 0;
-        DijkstraItem item = null;
-        int count = 0;
-        while (true && count < 1000000)
+        while (true)
         {
-            count++;
+            DijkstraItem item = null;
             int menor = int.MaxValue;
             for (int i = 0; i < this.AuxiliarList.Length; i++)
             {
@@ -238,11 +236,12 @@ public class DijkstraManager
 
         List<Tile> path = new List<Tile>();
         Vertex v = this.AuxiliarList[(int)((targetCord.x * width) + targetCord.y)].vertex;
+        Vector2 position;
 
         while (item != originItem && item != null)
         {
             //Debug.Log(item.previousVertex);
-            Vector2 position = item.previousVertex.tile.GetPosition();
+            position = item.previousVertex.tile.GetPosition();
             path.Add(item.vertex.tile);
             item = this.AuxiliarList[(int)((position.x * width) + position.y)];
         }

@@ -55,18 +55,21 @@ public class Tile : MonoBehaviour
     }
     void OnMouseEnter()
     {
-        if (!this._blocked && !this._selected) this._highlight.SetActive(true);
+        if (!this._blocked && !this._selected) this.Highlight(true); ;
     }
     void OnMouseExit()
     {
-        if (!this._blocked) this._highlight.SetActive(false);
+        if (!this._blocked) this.Highlight(false);
     }
     void OnMouseDown()
     {
-        this._highlight.SetActive(false);
+        this.Highlight(false);
         if (!this._blocked) this._grid.SetSelectedTile(this.transform.position);
     }
-
+    public void Highlight(bool active)
+    {
+        this._highlight.SetActive(active);
+    }
     private Color32 DefColor(Vector3 position) => position.z switch
     {
         -3 => new Color32(0, 0, 0, 255),
