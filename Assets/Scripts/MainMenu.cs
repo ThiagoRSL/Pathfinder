@@ -2,40 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Menu : MonoBehaviour
+public class MainMenu : MonoBehaviour
 {
-    public GameObject MainMenu;
-    public GameObject Game;
-
-    // Start is called before the first frame update
-    void Start()
+    public void Play()
     {
-        MainMenuButton();
-    }
-
-    public void PlayButton()
-    {
-        // Play Now Button has been pressed, here you can initialize your game (For example Load a Scene called GameLevel etc.)
-        UnityEngine.SceneManagement.SceneManager.LoadScene("Game");
-    }
-
-    public void CreditsButton()
-    {
-        // Show Credits Menu
-        MainMenu.SetActive(false);
-        CreditsMenu.SetActive(true);
-    }
-
-    public void MainMenuButton()
-    {
-        // Show Main Menu
-        MainMenu.SetActive(true);
-        CreditsMenu.SetActive(false);
-    }
-
-    public void QuitButton()
-    {
-        // Quit Game
-        Application.Quit();
+        PlayerPrefs.SetInt("gridWidth", (int) GameObject.GetField("WidthField").GetText());
+        PlayerPrefs.SetInt("gridHeight", (int) GameObject.GetField("HeightField").GetText());
+        PlayerPrefs.SetInt("gridHardness", (int) GameObject.GetField("HardnessField").GetText());
+        SceneManager.LoadScene("Game");
     }
 }

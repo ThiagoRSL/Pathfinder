@@ -4,15 +4,18 @@ using UnityEngine;
 
 public class GridManager : MonoBehaviour
 {
-    [SerializeField] public int _width, _height, _level;
     [SerializeField] private Tile _tilePreFab, _selectedTile;
     [SerializeField] private Player _playerPreFab;
     [SerializeField] private Transform _cam;
     [SerializeField] private Dictionary<Vector3, Tile> _tiles;
+    public int _width, _height, _level;
     public Player player;
 
     private void Start()
     {
+        this._width = PlayerPrefs.GetInt("gridWidth");
+        this._height = PlayerPrefs.GetInt("gridHeight");
+        this._level = PlayerPrefs.GetInt("gridHardness");
         this.CreateGrid();
         this.SetPlayer();
     }
