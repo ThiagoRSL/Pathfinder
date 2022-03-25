@@ -34,7 +34,7 @@ public class Arris
     {
         this.vertexA = a;
         this.vertexB = b;
-        this.cost = Mathf.Abs(a.elevation - b.elevation);//Substituir o custo pela hipotenusa
+        this.cost = 1 + Mathf.Abs(a.elevation - b.elevation);//Substituir o custo pela hipotenusa
     }
     public Vertex GetTo(Vertex from)
     {
@@ -54,7 +54,7 @@ public class DijkstraItem
     {
         this.vertex = vertex;
         this.previousVertex = null;
-        this.totalCost = Mathf.Infinity;
+        this.totalCost = (float) int.MaxValue;
         this.open = true;
     }
 }
@@ -154,8 +154,8 @@ public class DijkstraManager
         this.AuxiliarList[(int)((originCord.x * width) + originCord.y)].totalCost = 0;
         while (true)
         {
-            DijkstraItem item = null;
             int menor = int.MaxValue;
+            DijkstraItem item = null;
             for (int i = 0; i < this.AuxiliarList.Length; i++)
             {
                 if (menor > this.AuxiliarList[i].totalCost && this.AuxiliarList[i].open)
@@ -171,53 +171,53 @@ public class DijkstraManager
 
             if (item.vertex.north != null)
             {
-                Vector2 itemPosition = item.vertex.north.GetTo(item.vertex).tile.GetPosition();
-                if (this.AuxiliarList[(int)((itemPosition.x* width) + itemPosition.y)].open)
+                Vector2 nextItemPosition = item.vertex.north.GetTo(item.vertex).tile.GetPosition();
+                if (this.AuxiliarList[(int)((nextItemPosition.x* width) + nextItemPosition.y)].open)
                 {
-                    DijkstraItem toItem = this.AuxiliarList[(int)((itemPosition.x * width) + itemPosition.y)];
-                    if ((item.vertex.north.cost + item.totalCost) < (toItem.totalCost))
+                    DijkstraItem nextItem = this.AuxiliarList[(int)((nextItemPosition.x * width) + nextItemPosition.y)];
+                    if ((item.vertex.north.cost + item.totalCost) < (nextItem.totalCost))
                     {
-                        toItem.totalCost = (item.vertex.north.cost + item.totalCost);
-                        toItem.previousVertex = item.vertex;
+                        nextItem.totalCost = (item.vertex.north.cost + item.totalCost);
+                        nextItem.previousVertex = item.vertex;
                     }
                 }
             }
             if (item.vertex.east != null)
             {
-                Vector2 itemPosition = item.vertex.east.GetTo(item.vertex).tile.GetPosition();
-                if (this.AuxiliarList[(int)((itemPosition.x * width) + itemPosition.y)].open)
+                Vector2 nextItemPosition = item.vertex.east.GetTo(item.vertex).tile.GetPosition();
+                if (this.AuxiliarList[(int)((nextItemPosition.x * width) + nextItemPosition.y)].open)
                 {
-                    DijkstraItem toItem = this.AuxiliarList[(int)((itemPosition.x * width) + itemPosition.y)];
-                    if ((item.vertex.east.cost + item.totalCost) < (toItem.totalCost))
+                    DijkstraItem nextItem = this.AuxiliarList[(int)((nextItemPosition.x * width) + nextItemPosition.y)];
+                    if ((item.vertex.east.cost + item.totalCost) < (nextItem.totalCost))
                     {
-                        toItem.totalCost = (item.vertex.east.cost + item.totalCost);
-                        toItem.previousVertex = item.vertex;
+                        nextItem.totalCost = (item.vertex.east.cost + item.totalCost);
+                        nextItem.previousVertex = item.vertex;
                     }
                 }
             }
             if (item.vertex.west != null)
             {
-                Vector2 itemPosition = item.vertex.west.GetTo(item.vertex).tile.GetPosition();
-                if (this.AuxiliarList[(int)((itemPosition.x * width) + itemPosition.y)].open)
+                Vector2 nextItemPosition = item.vertex.west.GetTo(item.vertex).tile.GetPosition();
+                if (this.AuxiliarList[(int)((nextItemPosition.x * width) + nextItemPosition.y)].open)
                 {
-                    DijkstraItem toItem = this.AuxiliarList[(int)((itemPosition.x * width) + itemPosition.y)];
-                    if ((item.vertex.west.cost + item.totalCost) < (toItem.totalCost))
+                    DijkstraItem nextItem = this.AuxiliarList[(int)((nextItemPosition.x * width) + nextItemPosition.y)];
+                    if ((item.vertex.west.cost + item.totalCost) < (nextItem.totalCost))
                     {
-                        toItem.totalCost = (item.vertex.west.cost + item.totalCost);
-                        toItem.previousVertex = item.vertex;
+                        nextItem.totalCost = (item.vertex.west.cost + item.totalCost);
+                        nextItem.previousVertex = item.vertex;
                     }
                 }
             }
             if (item.vertex.south != null)
             {
-                Vector2 itemPosition = item.vertex.south.GetTo(item.vertex).tile.GetPosition();
-                if (this.AuxiliarList[(int)((itemPosition.x * width) + itemPosition.y)].open)
+                Vector2 nextItemPosition = item.vertex.south.GetTo(item.vertex).tile.GetPosition();
+                if (this.AuxiliarList[(int)((nextItemPosition.x * width) + nextItemPosition.y)].open)
                 {
-                    DijkstraItem toItem = this.AuxiliarList[(int)((itemPosition.x * width) + itemPosition.y)];
-                    if ((item.vertex.south.cost + item.totalCost) < (toItem.totalCost))
+                    DijkstraItem nextItem = this.AuxiliarList[(int)((nextItemPosition.x * width) + nextItemPosition.y)];
+                    if ((item.vertex.south.cost + item.totalCost) < (nextItem.totalCost))
                     {
-                        toItem.totalCost = (item.vertex.south.cost + item.totalCost);
-                        toItem.previousVertex = item.vertex;
+                        nextItem.totalCost = (item.vertex.south.cost + item.totalCost);
+                        nextItem.previousVertex = item.vertex;
                     }
                 }
             }
