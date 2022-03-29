@@ -235,7 +235,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 619571bc5153cd743b3012586ea45ac1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tilePreFab: {fileID: 2261282871637138625, guid: 5e6d2e907bc3b914198905d4fc6bacf2, type: 3}
+  tilePreFab: {fileID: 3242139704015128864, guid: cacaf295f41764f4a936c1e6af3cd1cb, type: 3}
   selectedTile: {fileID: 0}
   playerPreFab: {fileID: 6219277658035230581, guid: ddaa8d61a204d6647acc2c2604315425, type: 3}
   cam: {fileID: 519420032}

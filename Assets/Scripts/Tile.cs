@@ -95,5 +95,9 @@ public class Tile : MonoBehaviour
         3 => new Color32(100, 0, 0, 255),
     };
 
+    public static float Unevenness(Tile a, Tile b)
+    {
+        return 1+Mathf.Abs(a.GetElevation() - b.GetElevation());
+    }
 }
 

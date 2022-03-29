@@ -60,6 +60,7 @@ public class GridManager : MonoBehaviour
 
     public void SetSelectedTile(Vector2 position)
     {
+        if (this.player.IsMoving()) return;
         if (this.selectedTile) this.selectedTile.UnselectTile();
         this.selectedTile = this.GetTileAtPosition(position);
         this.selectedTile.SelectTile();
