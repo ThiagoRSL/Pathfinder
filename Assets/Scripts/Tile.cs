@@ -5,34 +5,34 @@ using UnityEngine;
 public class Tile : MonoBehaviour
 {
 
-    [SerializeField] private GridManager _grid;
-    [SerializeField] private Color _selectedColor;
-    [SerializeField] private SpriteRenderer _renderer;
-    [SerializeField] private bool _blocked;
-    [SerializeField] private bool _selected;
-    [SerializeField] private GameObject _highlight;
+    [SerializeField] private Color selectedColor;
+    [SerializeField] private SpriteRenderer renderer;
+    [SerializeField] private GameObject highlight;
+    private GridManager grid;
+    private bool selected;
+    private bool path;
 
     public void Init(GridManager grid, bool hasElevation)
     {
-        if(hasElevation)
+        if (hasElevation)
         {
-            this.SetElevation(Random.Range(-3,3));
+            this.SetElevation(Random.Range(-3, 3));
         }
         else
         {
             this.SetElevation(0);
         }
-        this._grid = grid;
+        this.grid = grid;
     }
     public void UnselectTile()
     {
-        this._selected = false;
+        this.selected = false;
         this.SetColor();
     }
     public void SelectTile()
     {
-        this._selected = true;
-        this._renderer.color = this._selectedColor;
+        this.selected = true;
+        this.renderer.color = this.selectedColor;
     }
 
     public Vector3 GetPosition()
@@ -49,26 +49,38 @@ public class Tile : MonoBehaviour
         this.SetColor();
     }
 
-    private void SetColor(){
+    private void SetColor()
+    {
         Color32 color = this.DefColor(this.transform.position);
-        this._renderer.color = color;
+        this.renderer.color = color;
     }
+    public void Highlight(bool active)
+    {
+        this.highlight.SetActive(active);
+    }
+
+    public void SetPath()
+    {
+        this.path = true;
+    }
+    public void UnPath()
+    {
+        this.path = false;
+    }
+
+
     void OnMouseEnter()
     {
-        if (!this._blocked && !this._selected) this.Highlight(true); ;
+        this.Highlight(true);
     }
     void OnMouseExit()
     {
-        if (!this._blocked) this.Highlight(false);
+        this.Highlight(false);
     }
     void OnMouseDown()
     {
         this.Highlight(false);
-        if (!this._blocked) this._grid.SetSelectedTile(this.transform.position);
-    }
-    public void Highlight(bool active)
-    {
-        this._highlight.SetActive(active);
+        this.grid.SetSelectedTile(this.transform.position);
     }
     private Color32 DefColor(Vector3 position) => position.z switch
     {

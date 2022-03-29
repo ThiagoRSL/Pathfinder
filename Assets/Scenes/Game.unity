@@ -235,13 +235,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 619571bc5153cd743b3012586ea45ac1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _width: 8
-  _height: 8
-  _level: 20
-  _tilePreFab: {fileID: 4474103494080634183, guid: 8aef1221a21c54f42a332feda1b31b39, type: 3}
-  _selectedTile: {fileID: 0}
-  _playerPreFab: {fileID: 6219277658035230581, guid: ddaa8d61a204d6647acc2c2604315425, type: 3}
-  _cam: {fileID: 519420032}
+  tilePreFab: {fileID: 4203502208953716499, guid: 5f5fc780aebe06b4eb4fa75818440e77, type: 3}
+  selectedTile: {fileID: 0}
+  playerPreFab: {fileID: 6219277658035230581, guid: ddaa8d61a204d6647acc2c2604315425, type: 3}
+  cam: {fileID: 519420032}
+  width: 15
+  height: 15
+  level: 35
   player: {fileID: 0}
 --- !u!4 &2139711558
 Transform:
