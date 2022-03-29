@@ -84,13 +84,13 @@ public class Tile : MonoBehaviour
     }
     private Color32 DefColor(Vector3 position) => position.z switch
     {
-        -3 => new Color32(0, 0, 0, 255),
-        -2 => new Color32(40, 40, 40, 255),
-        -1 => new Color32(80, 80, 80, 255),
-        0 => new Color32(120, 120, 120, 255),
-        1 => new Color32(160, 160, 160, 255),
-        2 => new Color32(200, 200, 200, 255),
-        3 => new Color32(240, 240, 240, 255),
+        -3 => new Color32(0, 60, 80, 255),
+        -2 => new Color32(0, 120, 160, 255),
+        -1 => new Color32(0, 180, 240, 255),
+        0 => new Color32(125, 125, 125, 255),
+        1 => new Color32(100, 0, 0, 255),
+        2 => new Color32(160, 0, 0, 255),
+        3 => new Color32(220, 0, 0, 255),
     };
 
 }
