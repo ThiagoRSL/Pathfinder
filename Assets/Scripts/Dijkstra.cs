@@ -70,23 +70,17 @@ public class DijkstraManager
         this.grid = grid;
         this.MapVertexes();
         this.MapArrises();
-        this.InitializeList();
-        Vector2 playerPosition = grid.player.transform.position;
-        Debug.Log("AAA");
-        Vertex playerVertex = this.AuxiliarList[(int)((playerPosition.x * grid._width) + playerPosition.y)].vertex;
-        Debug.Log(playerVertex.north.cost);
-        Debug.Log(playerVertex.south.cost);
-        Debug.Log(playerVertex.east.cost);
-        Debug.Log(playerVertex.west.cost);
     }
 
     public void MapVertexes()
     {
+        int width = (int)this.grid.GetWidth();
+        int height = (int)this.grid.GetHeight();
         //Mapping the Vertexes, 
-        this.vertexes = new Vertex[(int)this.grid.GetWidth(), (int)this.grid.GetHeight()];
-        for (int i = 0; i < this.grid.GetWidth(); i++)
+        this.vertexes = new Vertex[width, height];
+        for (int i = 0; i < width; i++)
         {
-            for (int j = 0; j < this.grid.GetHeight(); j++)
+            for (int j = 0; j < height; j++)
             {
                 this.vertexes[i,j] = new Vertex(this.grid.GetTileAtPosition(new Vector2(i, j)));
             }
@@ -94,8 +88,8 @@ public class DijkstraManager
     }
      public void MapArrises()
     {
-        float width = (int)this.grid.GetWidth();
-        float height = (int)this.grid.GetHeight();
+        int width = (int)this.grid.GetWidth();
+        int height = (int)this.grid.GetHeight();
 
         //Mapping the Arrises
         for (int i = 0; i < width; i++)
@@ -136,22 +130,28 @@ public class DijkstraManager
         int height = (int) this.grid.GetHeight();
         this.AuxiliarList = new DijkstraItem[(width*height)];
 
-        for (int i = 0; i < (this.grid.GetWidth()); i++)
+        //Debug.Log(width);
+        //Debug.Log(height);
+        for (int i = 0; i < width; i++)
         {
-            for (int j = 0; j < (this.grid.GetHeight()); j++)
+            for (int j = 0; j < height; j++)
             {
-                this.AuxiliarList[(i*width) + j] = new DijkstraItem(this.vertexes[i, j]);
+                this.AuxiliarList[(i * height) + j] = new DijkstraItem(this.vertexes[i, j]);
+                Debug.Log((i * height) + j);
             }
         }
+        //Debug.Log(this.AuxiliarList.Length);
     }
 
     public List<Tile> Dijkstra(Vector3 originCord, Vector3 targetCord)
     {
-        float width = (int)this.grid.GetWidth();
+        int height = (int)this.grid.GetHeight();
+        int width = (int)this.grid.GetWidth();
+
         Vertex target = this.vertexes[(int)targetCord.x,(int)targetCord.y];
         this.InitializeList();
 
-        this.AuxiliarList[(int)((originCord.x * width) + originCord.y)].totalCost = 0;
+        this.AuxiliarList[(int)((originCord.x * height) + originCord.y)].totalCost = 0;
         while (true)
         {
             int menor = int.MaxValue;
@@ -172,9 +172,9 @@ public class DijkstraManager
             if (item.vertex.north != null)
             {
                 Vector2 nextItemPosition = item.vertex.north.GetTo(item.vertex).tile.GetPosition();
-                if (this.AuxiliarList[(int)((nextItemPosition.x* width) + nextItemPosition.y)].open)
+                if (this.AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)].open)
                 {
-                    DijkstraItem nextItem = this.AuxiliarList[(int)((nextItemPosition.x * width) + nextItemPosition.y)];
+                    DijkstraItem nextItem = this.AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)];
                     if ((item.vertex.north.cost + item.totalCost) < (nextItem.totalCost))
                     {
                         nextItem.totalCost = (item.vertex.north.cost + item.totalCost);
@@ -185,9 +185,9 @@ public class DijkstraManager
             if (item.vertex.east != null)
             {
                 Vector2 nextItemPosition = item.vertex.east.GetTo(item.vertex).tile.GetPosition();
-                if (this.AuxiliarList[(int)((nextItemPosition.x * width) + nextItemPosition.y)].open)
+                if (this.AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)].open)
                 {
-                    DijkstraItem nextItem = this.AuxiliarList[(int)((nextItemPosition.x * width) + nextItemPosition.y)];
+                    DijkstraItem nextItem = this.AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)];
                     if ((item.vertex.east.cost + item.totalCost) < (nextItem.totalCost))
                     {
                         nextItem.totalCost = (item.vertex.east.cost + item.totalCost);
@@ -198,9 +198,9 @@ public class DijkstraManager
             if (item.vertex.west != null)
             {
                 Vector2 nextItemPosition = item.vertex.west.GetTo(item.vertex).tile.GetPosition();
-                if (this.AuxiliarList[(int)((nextItemPosition.x * width) + nextItemPosition.y)].open)
+                if (this.AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)].open)
                 {
-                    DijkstraItem nextItem = this.AuxiliarList[(int)((nextItemPosition.x * width) + nextItemPosition.y)];
+                    DijkstraItem nextItem = this.AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)];
                     if ((item.vertex.west.cost + item.totalCost) < (nextItem.totalCost))
                     {
                         nextItem.totalCost = (item.vertex.west.cost + item.totalCost);
@@ -211,9 +211,9 @@ public class DijkstraManager
             if (item.vertex.south != null)
             {
                 Vector2 nextItemPosition = item.vertex.south.GetTo(item.vertex).tile.GetPosition();
-                if (this.AuxiliarList[(int)((nextItemPosition.x * width) + nextItemPosition.y)].open)
+                if (this.AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)].open)
                 {
-                    DijkstraItem nextItem = this.AuxiliarList[(int)((nextItemPosition.x * width) + nextItemPosition.y)];
+                    DijkstraItem nextItem = this.AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)];
                     if ((item.vertex.south.cost + item.totalCost) < (nextItem.totalCost))
                     {
                         nextItem.totalCost = (item.vertex.south.cost + item.totalCost);
@@ -228,12 +228,13 @@ public class DijkstraManager
 
     public List<Tile> GetShortestPath(Vector2 originCord, Vector2 targetCord)
     {
-        float width = (int) this.grid.GetWidth();
-        DijkstraItem originItem = this.AuxiliarList[(int)((originCord.x * width) + originCord.y)];
-        DijkstraItem item = this.AuxiliarList[(int)((targetCord.x * width) + targetCord.y)];
+        int height = (int)this.grid.GetHeight();
+
+        DijkstraItem originItem = this.AuxiliarList[(int)((originCord.x * height) + originCord.y)];
+        DijkstraItem item = this.AuxiliarList[(int)((targetCord.x * height) + targetCord.y)];
 
         List<Tile> path = new List<Tile>();
-        Vertex v = this.AuxiliarList[(int)((targetCord.x * width) + targetCord.y)].vertex;
+        Vertex v = this.AuxiliarList[(int)((targetCord.x * height) + targetCord.y)].vertex;
         Vector2 position;
 
         while (item != originItem && item != null)
@@ -241,7 +242,7 @@ public class DijkstraManager
             //Debug.Log(item.previousVertex);
             position = item.previousVertex.tile.GetPosition();
             path.Add(item.vertex.tile);
-            item = this.AuxiliarList[(int)((position.x * width) + position.y)];
+            item = this.AuxiliarList[(int)((position.x * height) + position.y)];
         }
         path.Reverse();
         return path;
