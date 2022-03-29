@@ -13,9 +13,9 @@ public class GridManager : MonoBehaviour
 
     private void Start()
     {
-        this._width = PlayerPrefs.GetInt("gridWidth");
+        /*this._width = PlayerPrefs.GetInt("gridWidth");
         this._height = PlayerPrefs.GetInt("gridHeight");
-        this._level = PlayerPrefs.GetInt("gridHardness");
+        this._level = PlayerPrefs.GetInt("gridHardness");*/
         this.CreateGrid();
         this.SetPlayer();
     }
