@@ -7,7 +7,7 @@ public class Tile : MonoBehaviour
 
     [SerializeField] private Color selectedColor;
     [SerializeField] private SpriteRenderer renderer;
-    [SerializeField] private GameObject highlight;
+    [SerializeField] private GameObject highlight, pathHighlight;
     private GridManager grid;
     private bool selected;
     private bool path;
@@ -62,9 +62,11 @@ public class Tile : MonoBehaviour
     public void SetPath()
     {
         this.path = true;
+        this.pathHighlight.SetActive(true);
     }
-    public void UnPath()
+    public void UnsetPath()
     {
+        this.pathHighlight.SetActive(false);
         this.path = false;
     }
 
@@ -88,9 +90,9 @@ public class Tile : MonoBehaviour
         -2 => new Color32(0, 120, 160, 255),
         -1 => new Color32(0, 180, 240, 255),
         0 => new Color32(125, 125, 125, 255),
-        1 => new Color32(100, 0, 0, 255),
+        1 => new Color32(220, 0, 0, 255),
         2 => new Color32(160, 0, 0, 255),
-        3 => new Color32(220, 0, 0, 255),
+        3 => new Color32(100, 0, 0, 255),
     };
 
 }

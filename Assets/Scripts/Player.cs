@@ -33,14 +33,13 @@ public class Player : MonoBehaviour
         {
             foreach (var tile in this.path)
             {
-                tile.Highlight(false);
+                tile.UnsetPath();
             }
         }
         this.path = path;
         foreach (var tile in this.path)
         {
-            tile.Highlight(true);
-            Debug.Log(tile);
+            tile.SetPath();
         }
     }
     public void Move()
