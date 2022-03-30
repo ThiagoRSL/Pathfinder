@@ -16,7 +16,7 @@ public class Tile : MonoBehaviour
     {
         if (hasElevation)
         {
-            this.SetElevation(Random.Range(-3, 3));
+            this.SetElevation(Random.Range(-3, 4));
         }
         else
         {
@@ -90,9 +90,9 @@ public class Tile : MonoBehaviour
         -2 => new Color32(0, 120, 160, 255),
         -1 => new Color32(0, 180, 240, 255),
         0 => new Color32(125, 125, 125, 255),
-        1 => new Color32(220, 0, 0, 255),
+        1 => new Color32(240, 0, 0, 255),
         2 => new Color32(160, 0, 0, 255),
-        3 => new Color32(100, 0, 0, 255),
+        3 => new Color32(80, 0, 0, 255),
     };
 
     public static float Unevenness(Tile a, Tile b)
