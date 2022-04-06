@@ -5,25 +5,25 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer _renderer;
-    [SerializeField] private Tile _targetTile;
+    [SerializeField] private Tile targetTile;
     [SerializeField] public Tile atTile;
+    private Grid grid;
     private bool isMoving;
     private int moveSpeed;
     private List<Tile> path;
-    private GridManager _grid;
 
     public bool IsMoving()
     {
         return this.isMoving;
     }
-    public void Init(Tile tileInit, GridManager grid)
+    public void Init(Tile tileInit)
     {
-        this.moveSpeed = 5;
-        this.path = null;
-        this._grid = grid;
-        this.atTile = tileInit;
-        this.transform.position = this.atTile.GetPosition() + new Vector3(0,0,1);
-        this.SetColor(new Color(Random.Range(0, 255), Random.Range(0, 255), Random.Range(0, 255)));
+        moveSpeed = 5;
+        this.grid = GameManager.Instance.Grid;
+        path = null;
+        atTile = tileInit;
+        transform.position = this.atTile.GetPosition() + new Vector3(0,0,1);
+        SetColor(new Color(Random.Range(0, 255), Random.Range(0, 255), Random.Range(0, 255)));
     }
     public void SetColor(Color color)
     {
@@ -31,9 +31,21 @@ public class Player : MonoBehaviour
     }
     public void MoveTo(Vector3 targetPosition)
     {
-        this._targetTile = this._grid.GetTileAtPosition(targetPosition);
+        this.targetTile = grid.GetTileAtPosition(targetPosition);
         this.Move();
     }
+    public void SetTargetTile(Vector2 position)
+    {
+        if (this.IsMoving()) return;
+        this.targetTile.UnselectTile();
+        this.targetTile = grid.GetTileAtPosition(position);
+        this.targetTile.SelectTile();
+        Dijkstra dm = new Dijkstra();
+        SetPath(dm.FindPath(atTile.GetPosition(), targetTile.GetPosition()));
+        dm = null;
+    }
+
+
     public void SetPath(List<Tile> path)
     {
         if (this.path != null)

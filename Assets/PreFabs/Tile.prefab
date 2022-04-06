@@ -98,6 +98,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 380e40e2a04a9e54db54a2789c985cef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tilePreFab: {fileID: 3242139704015128864}
   selectedColor: {r: 0.01976651, g: 0.8679245, b: 0, a: 1}
   renderer: {fileID: 804148474646605716}
   highlight: {fileID: 8274296707707724821}

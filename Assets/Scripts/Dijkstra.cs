@@ -2,47 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Vertex
-{
-    public Tile tile;
-    public float elevation;
-
-    public Arris north;
-    public Arris east;
-    public Arris west;
-    public Arris south;
-
-    public Vertex(Tile tile)
-    {
-        this.tile = tile;
-        this.elevation = tile.GetElevation();
-
-        this.north = null;
-        this.east = null;
-        this.west = null;
-        this.south = null;
-    }
-}
-
-public class Arris
-{
-    public Vertex vertexA;
-    public Vertex vertexB;
-    public float cost;
-
-    public Arris(Vertex a, Vertex b)
-    {
-        this.vertexA = a;
-        this.vertexB = b;
-        this.cost = 1 + Mathf.Abs(a.elevation - b.elevation);//Substituir o custo pela hipotenusa
-    }
-    public Vertex GetTo(Vertex from)
-    {
-        if(from == this.vertexA) return this.vertexB;
-        else return this.vertexA;
-    }
-}
-
 public class DijkstraItem
 {
     public Vertex vertex;
@@ -59,96 +18,39 @@ public class DijkstraItem
     }
 }
 
-public class DijkstraManager
+public class Dijkstra
 {
-    private GridManager grid;
-    private Vertex[,] vertexes;
     private DijkstraItem[] AuxiliarList;
+    public Graph Graph { get; private set; }
 
-    public DijkstraManager(GridManager grid)
+    private int width;
+    private int height;
+
+    public Dijkstra()
     {
-        this.grid = grid;
-        this.MapVertexes();
-        this.MapArrises();
+        this.Graph = GameManager.Instance.Graph;
+        this.width = Graph.Grid.Width;
+        this.height = Graph.Grid.Height;
     }
 
-    public void MapVertexes()
-    {
-        int width = (int)this.grid.GetWidth();
-        int height = (int)this.grid.GetHeight();
-        //Mapping the Vertexes, 
-        this.vertexes = new Vertex[width, height];
-        for (int i = 0; i < width; i++)
-        {
-            for (int j = 0; j < height; j++)
-            {
-                this.vertexes[i,j] = new Vertex(this.grid.GetTileAtPosition(new Vector2(i, j)));
-            }
-        }
-    }
-     public void MapArrises()
-    {
-        int width = (int)this.grid.GetWidth();
-        int height = (int)this.grid.GetHeight();
-
-        //Mapping the Arrises
-        for (int i = 0; i < width; i++)
-        {
-            for (int j = 0; j < height; j++)
-            {
-                if (this.vertexes[i, j].west == null &&  i > 0)
-                {
-                    Arris arris = new Arris(this.vertexes[i, j], this.vertexes[i - 1, j]);
-                    this.vertexes[i, j].west = arris;
-                    this.vertexes[i - 1, j].east = arris;
-                }
-                if (this.vertexes[i, j].east == null && i < (width - 1))
-                {
-                    Arris arris = new Arris(this.vertexes[i, j], this.vertexes[i + 1, j]);
-                    this.vertexes[i, j].east = arris;
-                    this.vertexes[i + 1, j].west = arris;
-                }
-                if (this.vertexes[i, j].north == null && j < (height - 1))
-                {
-                    Arris arris = new Arris(this.vertexes[i, j], this.vertexes[i,j + 1]);
-                    this.vertexes[i, j].north = arris;
-                    this.vertexes[i, j + 1].south = arris;
-                }
-                if (this.vertexes[i, j].south == null && j > 0)
-                {
-                    Arris arris = new Arris(this.vertexes[i, j], this.vertexes[i,j - 1]);
-                    this.vertexes[i, j].south = arris;
-                    this.vertexes[i,j - 1].north = arris;
-                }
-            }
-        }
-    }
 
     public void InitializeList()
     {
-        int width = (int) this.grid.GetWidth();
-        int height = (int) this.grid.GetHeight();
-        this.AuxiliarList = new DijkstraItem[(width*height)];
+        this.AuxiliarList = new DijkstraItem[(width * height)];
 
-        //Debug.Log(width);
-        //Debug.Log(height);
         for (int i = 0; i < width; i++)
         {
             for (int j = 0; j < height; j++)
             {
-                this.AuxiliarList[(i * height) + j] = new DijkstraItem(this.vertexes[i, j]);
+                this.AuxiliarList[(i * height) + j] = new DijkstraItem(Graph.GetVertex(i, j));
                 Debug.Log((i * height) + j);
             }
         }
-        //Debug.Log(this.AuxiliarList.Length);
     }
 
-    public List<Tile> Dijkstra(Vector3 originCord, Vector3 targetCord)
+    public List<Tile> FindPath(Vector3 originCord, Vector3 targetCord)
     {
-        int height = (int)this.grid.GetHeight();
-        int width = (int)this.grid.GetWidth();
-
-        Vertex target = this.vertexes[(int)targetCord.x,(int)targetCord.y];
+        Vertex target = Graph.GetVertex((int)targetCord.x, (int)targetCord.y);
         this.InitializeList();
 
         this.AuxiliarList[(int)((originCord.x * height) + originCord.y)].totalCost = 0;
@@ -228,8 +130,6 @@ public class DijkstraManager
 
     public List<Tile> GetShortestPath(Vector2 originCord, Vector2 targetCord)
     {
-        int height = (int)this.grid.GetHeight();
-
         DijkstraItem originItem = this.AuxiliarList[(int)((originCord.x * height) + originCord.y)];
         DijkstraItem item = this.AuxiliarList[(int)((targetCord.x * height) + targetCord.y)];
 

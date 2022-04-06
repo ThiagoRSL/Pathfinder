@@ -4,25 +4,22 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-
     [SerializeField] private Color selectedColor;
     [SerializeField] private SpriteRenderer renderer;
     [SerializeField] private GameObject highlight, pathHighlight;
-    private GridManager grid;
     private bool selected;
     private bool path;
 
-    public void Init(GridManager grid, bool hasElevation)
+    public void Init(bool hasElevation, int i, int j)
     {
         if (hasElevation)
         {
-            this.SetElevation(Random.Range(-3, 4));
+            SetElevation(Random.Range(-3, 4));
         }
         else
         {
-            this.SetElevation(0);
+            SetElevation(0);
         }
-        this.grid = grid;
     }
     public void UnselectTile()
     {
@@ -82,7 +79,7 @@ public class Tile : MonoBehaviour
     void OnMouseDown()
     {
         this.Highlight(false);
-        this.grid.SetSelectedTile(this.transform.position);
+        GameManager.Instance.Player.SetTargetTile(this.transform.position);
     }
     private Color32 DefColor(Vector3 position) => position.z switch
     {

@@ -217,7 +217,7 @@ GameObject:
   - component: {fileID: 2139711558}
   - component: {fileID: 2139711557}
   m_Layer: 0
-  m_Name: GridManager
+  m_Name: GameManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -232,17 +232,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 2139711556}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 619571bc5153cd743b3012586ea45ac1, type: 3}
+  m_Script: {fileID: 11500000, guid: f9f432c4f661b7f47803226c93f1b20f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tilePreFab: {fileID: 3242139704015128864, guid: cacaf295f41764f4a936c1e6af3cd1cb, type: 3}
-  selectedTile: {fileID: 0}
+  gridWidth: 22
+  gridHeight: 22
+  gridComplexity: 23
   playerPreFab: {fileID: 6219277658035230581, guid: ddaa8d61a204d6647acc2c2604315425, type: 3}
   cam: {fileID: 519420032}
-  width: 15
-  height: 15
-  level: 35
-  player: {fileID: 0}
 --- !u!4 &2139711558
 Transform:
   m_ObjectHideFlags: 0
