@@ -2,8 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Grid : MonoBehaviour
+public class GridManager : MonoBehaviour
 {
+    //Lazy Singleton Implementation
+    private static GridManager instance;
+
+    public static GridManager Instance { get { return instance; } }
+
+    void Awake()
+    {
+        if (instance is null)
+        {
+            instance = this;
+        }
+        DontDestroyOnLoad(this);
+    }
+    //
+
     private Dictionary<Vector3, Tile> tiles;
     private int width;
     private int height;
@@ -12,19 +27,18 @@ public class Grid : MonoBehaviour
     public int Width { get { return width; } }
     public int Height { get { return height; } }
 
-    public Grid(int width, int height, int complexity)
+    public GridManager(int width, int height, int complexity)
     {
         this.width = width;
         this.height = height;
         this.complexity = complexity;
 
-        tiles = new Dictionary<Vector3, Tile>();
-
-        GameObject gameObject = new GameObject("GridObject", typeof(Grid));
-        gameObject.name = "Grid";
+        GameObject gameObject = new GameObject("Grid", typeof(Grid));
         Transform transform = gameObject.transform;
         transform.SetParent(null, false);
         transform.localPosition = new Vector3(0, 0, 0);
+
+        tiles = new Dictionary<Vector3, Tile>();
 
         for (int i = 0; i < width; i++)
         {
@@ -36,7 +50,7 @@ public class Grid : MonoBehaviour
                 newTile.transform.position = position;
                 newTile.name = $"Tile {i} {j}";
                 newTile.Init(UnityEngine.Random.Range(1, 100) > 100 - complexity, i, j);
-                tiles[new Vector3(i, j)] = newTile;
+                tiles[position] = newTile;
             }
         }
     }

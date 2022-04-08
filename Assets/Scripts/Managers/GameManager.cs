@@ -21,14 +21,10 @@ public sealed class GameManager : MonoBehaviour
             instance = this;
         }
         DontDestroyOnLoad(this);
+        SetGame();
     }
     //
-    [SerializeField, Range(10, 100)]
-    public int gridWidth = 10;
-    [SerializeField, Range(10, 100)]
-    public int gridHeight = 10;
-    [SerializeField, Range(10, 100)]
-    public int gridComplexity = 10;
+
     [SerializeField]
     public Tile tilePreFab;
     [SerializeField] 
@@ -36,22 +32,37 @@ public sealed class GameManager : MonoBehaviour
     [SerializeField] 
     private Transform cam;
 
-    public Player Player { get; set; }
-    public Grid Grid { get; set; }
-    public Graph Graph { get; set; }
+    public Player Player { get; private set; }
+    public Grid Grid { get; private set; }
+    public Graph Graph { get; private set; }
 
-    private void Start()
+    private int gridWidth;
+    private int gridHeight;
+    private int gridComplexity;
+
+    public int GridWidth { get { return gridWidth; } }
+    public int GridHeight { get { return gridHeight; } }
+    public int GridComplexity { get { return gridComplexity; }  }
+
+    public void SetGridWidth(string val) { int.TryParse(val, out gridWidth); }
+    public void SetGridHeight(string val) { int.TryParse(val, out gridHeight); }
+    public void SetGridComplexity(string val) { int.TryParse(val, out gridComplexity); }
+
+    public void SetGame()
     {
-        Debug.Log(gridWidth);
-        Grid = new Grid(gridWidth, gridHeight, gridComplexity);
+        Grid = new Grid(10, 10, 10);// Grid = new Grid(GridWidth, GridHeight, GridComplexity);
+        // RenderGrid();
         Graph = new Graph(Grid);
-        SetPlayer();
-        cam.transform.position = new Vector3((float)Grid.Width / 2 - 0.5f, (float) Grid.Height / 2 - 0.5f, -10); ;
+        RenderPlayer();
+        cam.transform.position = new Vector3( (float) Grid.Width / 2 - 0.5f, (float) Grid.Height / 2 - 0.5f, -10); ;
     }
-    public void SetPlayer()
+
+    //public void RenderGrid()   {    }
+
+    public void RenderPlayer()
     {
         Tile playerTile = Grid.GetTileAtPosition(new Vector3(Random.Range(0, Grid.Width), Random.Range(0, Grid.Height)));
-        this.Player = Instantiate(this.playerPreFab, playerTile.GetPosition() + new Vector3(0, 0, 1), Quaternion.identity);
-        this.Player.Init(playerTile);
+        Player = Instantiate(playerPreFab, playerTile.GetPosition() + new Vector3(0, 0, 1), Quaternion.identity);
+        Player.Init(playerTile);
     }
 }

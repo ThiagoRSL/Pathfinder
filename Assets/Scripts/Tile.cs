@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class Tile : MonoBehaviour
 {
     [SerializeField] 
@@ -82,8 +83,9 @@ public class Tile : MonoBehaviour
     void OnMouseDown()
     {
         this.Highlight(false);
-        GameManager.Instance.Player.SetTargetTile(this.transform.position);
+        GameManager.Instance.Player.DefinePath(this.transform.position);
     }
+
     private Color32 DefColor(Vector3 position) => position.z switch
     {
         -3 => new Color32(0, 60, 80, 255),
