@@ -5,8 +5,8 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer _renderer;
-    [SerializeField] private Tile targetTile;
-    [SerializeField] public Tile atTile;
+    private Tile atTile;
+    private Tile targetTile;
     private Grid grid;
     private bool isMoving;
     private int moveSpeed;
@@ -37,7 +37,10 @@ public class Player : MonoBehaviour
     public void SetTargetTile(Vector2 position)
     {
         if (this.IsMoving()) return;
-        this.targetTile.UnselectTile();
+        if (!(this.targetTile is null))
+        {
+            this.targetTile.UnselectTile();
+        }
         this.targetTile = grid.GetTileAtPosition(position);
         this.targetTile.SelectTile();
         Dijkstra dm = new Dijkstra();

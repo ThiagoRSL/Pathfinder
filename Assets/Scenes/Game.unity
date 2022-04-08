@@ -221,7 +221,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!114 &2139711557
 MonoBehaviour:
@@ -235,9 +235,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9f432c4f661b7f47803226c93f1b20f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridWidth: 22
-  gridHeight: 22
-  gridComplexity: 23
+  gridWidth: 25
+  gridHeight: 15
+  gridComplexity: 46
+  tilePreFab: {fileID: 5950128499797657726, guid: 303c291e9f1180d4f83012f632bf06f0, type: 3}
   playerPreFab: {fileID: 6219277658035230581, guid: ddaa8d61a204d6647acc2c2604315425, type: 3}
   cam: {fileID: 519420032}
 --- !u!4 &2139711558

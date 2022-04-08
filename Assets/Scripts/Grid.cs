@@ -1,11 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class Grid
-{
-    [SerializeField]
-    public Tile tilePreFab;
 
+public class Grid : MonoBehaviour
+{
     private Dictionary<Vector3, Tile> tiles;
     private int width;
     private int height;
@@ -22,16 +20,23 @@ public class Grid
 
         tiles = new Dictionary<Vector3, Tile>();
 
+        GameObject gameObject = new GameObject("GridObject", typeof(Grid));
+        gameObject.name = "Grid";
+        Transform transform = gameObject.transform;
+        transform.SetParent(null, false);
+        transform.localPosition = new Vector3(0, 0, 0);
+
         for (int i = 0; i < width; i++)
         {
             for (int j = 0; j < height; j++)
             {
-                Vector3 pos = new Vector3(i, j);
-                var newTile = new Tile(); //Instantiate(tilePreFab, new Vector3(i, j, 0), Quaternion.identity);
-                tiles[pos] = newTile;
-                //newTile.transform.position = pos;
+                Vector3 position = new Vector3(i, j, 0);
+                var newTile = Instantiate(GameManager.Instance.tilePreFab, position, Quaternion.identity);
+                newTile.transform.SetParent(transform, true);
+                newTile.transform.position = position;
                 newTile.name = $"Tile {i} {j}";
                 newTile.Init(UnityEngine.Random.Range(1, 100) > 100 - complexity, i, j);
+                tiles[new Vector3(i, j)] = newTile;
             }
         }
     }

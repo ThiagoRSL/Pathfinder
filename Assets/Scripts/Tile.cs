@@ -4,9 +4,12 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    [SerializeField] private Color selectedColor;
-    [SerializeField] private SpriteRenderer renderer;
-    [SerializeField] private GameObject highlight, pathHighlight;
+    [SerializeField] 
+    private Color selectedColor;
+    [SerializeField] 
+    private SpriteRenderer renderer;
+    [SerializeField] 
+    private GameObject highlight, pathHighlight;
     private bool selected;
     private bool path;
 
