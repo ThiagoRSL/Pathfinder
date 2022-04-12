@@ -32,9 +32,8 @@ public sealed class GameManager : MonoBehaviour
     [SerializeField] 
     private Transform cam;
 
-    public Player Player { get; private set; }
-    public Grid Grid { get; private set; }
-    public Graph Graph { get; private set; }
+    public PlayerController Player { get; private set; }
+    public GridController Grid { get; private set; }
 
     private int gridWidth;
     private int gridHeight;
@@ -50,18 +49,17 @@ public sealed class GameManager : MonoBehaviour
 
     public void SetGame()
     {
-        Grid = new Grid(10, 10, 10);// Grid = new Grid(GridWidth, GridHeight, GridComplexity);
-        // RenderGrid();
-        Graph = new Graph(Grid);
-        RenderPlayer();
+        GridObject = GridManager.CreateGrid(10, 10, 10);
+        Grid = GridObject.GetComponent(typeof(GridController)) as GridController;
+        Grid.SpawnEntity(Player);
         cam.transform.position = new Vector3( (float) Grid.Width / 2 - 0.5f, (float) Grid.Height / 2 - 0.5f, -10); ;
     }
 
     //public void RenderGrid()   {    }
 
-    public void RenderPlayer()
+    public void RenderPlayer(GridController grid)
     {
-        Tile playerTile = Grid.GetTileAtPosition(new Vector3(Random.Range(0, Grid.Width), Random.Range(0, Grid.Height)));
+        Tile playerTile = grid.GetTileAtPosition(new Vector3(Random.Range(0, grid.Width), Random.Range(0, grid.Height)));
         Player = Instantiate(playerPreFab, playerTile.GetPosition() + new Vector3(0, 0, 1), Quaternion.identity);
         Player.Init(playerTile);
     }
