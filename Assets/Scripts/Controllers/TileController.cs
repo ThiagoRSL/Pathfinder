@@ -100,7 +100,7 @@ public class TileController : MonoBehaviour
         3 => new Color32(80, 0, 0, 255),
     };
 
-    public static float Unevenness(Tile a, Tile b)
+    public static float Unevenness(TileController a, TileController b)
     {
         return 1+Mathf.Abs(a.GetElevation() - b.GetElevation());
     }

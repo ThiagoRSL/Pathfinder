@@ -48,7 +48,7 @@ public class Dijkstra
         }
     }
 
-    public List<Tile> FindPath(Vector3 originCord, Vector3 targetCord)
+    public List<TileController> FindPath(Vector3 originCord, Vector3 targetCord)
     {
         Vertex target = Graph.GetVertex((int)targetCord.x, (int)targetCord.y);
         this.InitializeList();
@@ -128,12 +128,12 @@ public class Dijkstra
         return this.GetShortestPath(originCord, targetCord);
     }
 
-    public List<Tile> GetShortestPath(Vector2 originCord, Vector2 targetCord)
+    public List<TileController> GetShortestPath(Vector2 originCord, Vector2 targetCord)
     {
         DijkstraItem originItem = this.AuxiliarList[(int)((originCord.x * height) + originCord.y)];
         DijkstraItem item = this.AuxiliarList[(int)((targetCord.x * height) + targetCord.y)];
 
-        List<Tile> path = new List<Tile>();
+        List<TileController> path = new List<TileController>();
         Vertex v = this.AuxiliarList[(int)((targetCord.x * height) + targetCord.y)].vertex;
         Vector2 position;
 

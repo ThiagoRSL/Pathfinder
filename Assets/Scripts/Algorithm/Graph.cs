@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Vertex
 {
-    public Tile tile;
+    public TileController tile;
     public float elevation;
 
     public Arris north;
@@ -12,7 +12,7 @@ public class Vertex
     public Arris west;
     public Arris south;
 
-    public Vertex(Tile tile)
+    public Vertex(TileController tile)
     {
         this.tile = tile;
         this.elevation = tile.GetElevation();

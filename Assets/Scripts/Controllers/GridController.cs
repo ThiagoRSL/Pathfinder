@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Grid
 {
-    public Dictionary<Vector3, Tile> Tiles;
+    public Dictionary<Vector3, TileController> Tiles;
     public List<EntityController> Entities;
     public int Complexity { get; set; }
     public int Width { get; set; }
@@ -16,8 +16,17 @@ public class Grid
         Height = height;
         Complexity = complexity;
 
-        Tiles = new Dictionary<Vector3, Tile>();
+        Tiles = new Dictionary<Vector3, TileController>();
         Entities = new List<EntityController>();
+    }
+
+    public TileController GetTileAtPosition(Vector2 position)
+    {
+        if (Tiles.TryGetValue(position, out var tile))
+        {
+            return tile;
+        }
+        return null;
     }
 }
 
@@ -25,7 +34,7 @@ public class GridController : MonoBehaviour
 {
     private Grid Grid;
 
-    public void Init(int width, int height, int complexity, Tile tilePreFab)
+    public void Init(int width, int height, int complexity, TileController tilePreFab)
     {
         Grid = new Grid(width, height, complexity); 
 
@@ -39,7 +48,7 @@ public class GridController : MonoBehaviour
                 newTile.transform.position = position;
                 newTile.name = $"Tile {i} {j}";
                 newTile.Init(UnityEngine.Random.Range(1, 100) > 100 - complexity, i, j);
-                Grid.SetTileAtPosition(position, newTile);
+                SetTileAtPosition(position, newTile);
             }
         }
     }
@@ -47,9 +56,9 @@ public class GridController : MonoBehaviour
     {
        return new Graph(Grid);
     }
-    public void PutEntity(EntityController entity, Tile tile)
+    public void PutEntity(EntityController entity, TileController tile)
     {
-        entity.SetAtGrid(Grid);
+        entity.SetAtGrid(this);
         entity.SetAtTile(tile);
         tile.SetAtop(entity);
         AddEntity(entity);
@@ -59,6 +68,9 @@ public class GridController : MonoBehaviour
         Grid.Entities.Add(entity);
     }
     
-    public void SetTileAtPosition(Vector2 position, Tile tile) { Grid.SetTileAtPosition(position, tile); }
-    public Tile GetTileAtPosition(Vector2 position) { Grid.GetTileAtPosition(position); }
+    public void SetTileAtPosition(Vector2 position, TileController tile) 
+    {
+        Grid.Tiles[position] = tile;
+    }
+    public TileController GetTileAtPosition(Vector2 position) { Grid.GetTileAtPosition(position); }
 }

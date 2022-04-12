@@ -5,16 +5,16 @@ using UnityEngine;
 public abstract class EntityController : MonoBehaviour
 {
     protected GridController AtGrid;
-    protected Tile AtTile;
-    protected List<Tile> path;
-    protected Tile TargetTile;
+    protected TileController AtTile;
+    protected List<TileController> path;
+    protected TileController TargetTile;
 
     protected bool isMoving;
     protected int moveSpeed;
 
     protected bool IsMoving() { return this.isMoving; }
-    public void SetAtGrid(grid) { AtGrid = grid; }
-    public void SetAtTile(tile) { AtTile = tile; }
+    public void SetAtGrid(GridController grid) { AtGrid = grid; }
+    public void SetAtTile(TileController tile) { AtTile = tile; }
 
     protected void SetTargetTile(Vector3 position)
     {
@@ -23,11 +23,11 @@ public abstract class EntityController : MonoBehaviour
         {
             TargetTile.UnselectTile();
         }
-        TargetTile = grid.GetTileAtPosition(position);
+        TargetTile = AtGrid.GetTileAtPosition(position);
         TargetTile.SelectTile();
 
         Dijkstra dm = new Dijkstra();
-        SetPath(dm.FindPath(atTile.GetPosition(), TargetTile.GetPosition()));
+        SetPath(dm.FindPath(AtTile.GetPosition(), TargetTile.GetPosition()));
         dm = null;
     }
 
@@ -37,7 +37,7 @@ public abstract class EntityController : MonoBehaviour
         Move();
     }
 
-    protected void SetPath(List<Tile> path)
+    protected void SetPath(List<TileController> path)
     {
         if (this.path != null)
         {

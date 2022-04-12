@@ -26,9 +26,9 @@ public sealed class GameManager : MonoBehaviour
     //
 
     [SerializeField]
-    public Tile tilePreFab;
+    public TileController tilePreFab;
     [SerializeField]
-    private Player playerPreFab;
+    private PlayerController playerPreFab;
     [SerializeField]
     private Transform cam;
 
@@ -51,7 +51,7 @@ public sealed class GameManager : MonoBehaviour
     {
         SetGrid();
         SetPlayer();
-        cam.transform.position = new Vector3((float)Grid.Width / 2 - 0.5f, (float)Grid.Height / 2 - 0.5f, -10); ;
+        cam.transform.position = new Vector3((float)GridWidth / 2 - 0.5f, (float)GridHeight / 2 - 0.5f, -10); ;
     }
 
     public void SetGrid()
