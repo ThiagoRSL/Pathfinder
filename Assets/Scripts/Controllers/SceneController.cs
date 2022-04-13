@@ -22,6 +22,6 @@ public class SceneController : MonoBehaviour
     //
     public void Play()
     {
-        SceneManager.LoadScene("Game");
+        SceneManager.LoadScene("GameScene");
     }
 }

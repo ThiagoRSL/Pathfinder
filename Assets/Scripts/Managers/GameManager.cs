@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 using Random = UnityEngine.Random;
 
 
@@ -21,7 +23,6 @@ public sealed class GameManager : MonoBehaviour
             instance = this;
         }
         DontDestroyOnLoad(this);
-        SetGame();
     }
     //
 
@@ -29,15 +30,13 @@ public sealed class GameManager : MonoBehaviour
     public TileController tilePreFab;
     [SerializeField]
     private PlayerController playerPreFab;
-    [SerializeField]
-    private Transform cam;
 
     public PlayerController Player { get; private set; }
     public GridController Grid { get; private set; }
 
-    private int gridWidth;
-    private int gridHeight;
-    private int gridComplexity;
+    private int gridWidth = 10;
+    private int gridHeight = 10;
+    private int gridComplexity = 10;
 
     public int GridWidth { get { return gridWidth; } }
     public int GridHeight { get { return gridHeight; } }
@@ -51,20 +50,46 @@ public sealed class GameManager : MonoBehaviour
     {
         SetGrid();
         SetPlayer();
-        cam.transform.position = new Vector3((float)GridWidth / 2 - 0.5f, (float)GridHeight / 2 - 0.5f, -10); ;
+        SetCamera();
     }
 
     public void SetGrid()
     {
-        GridObject = GridManager.CreateGrid(10, 10, 10);
-        Grid = GridObject.GetComponent(typeof(GridController)) as GridController;
+        GameObject gameObject = new GameObject("GridObject");
+        Transform transform = gameObject.transform;
+        transform.SetParent(null, false);
+        transform.localPosition = new Vector3(0, 0, 0);
+        Grid = gameObject.AddComponent<GridController>();
+        Grid.Init(gridWidth, gridHeight, gridComplexity, tilePreFab);
     }
 
     public void SetPlayer()
     {
-        Tile playerTile = Grid.GetTileAtPosition(new Vector3(Random.Range(0, Grid.Width), Random.Range(0, Grid.Height)));
+        TileController playerTile = Grid.GetTileAtPosition(new Vector2(Random.Range(0, gridWidth), Random.Range(0, gridHeight)));
         Player = Instantiate(playerPreFab, playerTile.GetPosition() + new Vector3(0, 0, 1), Quaternion.identity);
-        Player.Init(playerTile);
-        Grid.SpawnEntity(Player, playerTile);
+        Player.Init(playerTile, Grid, new Dijkstra(Grid.MakeGraph()));
+        Grid.PutEntity(Player, playerTile);
+    }
+
+    public void SetCamera()
+    {
+        Camera.main.transform.position = new Vector3((float)gridWidth / 2 - 0.5f, (float)gridHeight / 2 - 0.5f, -10);
+        Camera.main.orthographicSize = 10;
+    }
+
+
+
+
+    void OnEnable()
+    {
+        Debug.Log("OnEnable called");
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if(scene.name == "GameScene")
+        {
+            SetGame();
+        }
     }
 }

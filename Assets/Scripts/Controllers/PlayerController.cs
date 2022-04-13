@@ -6,9 +6,10 @@ public class PlayerController : EntityController
 {
     [SerializeField] private SpriteRenderer _renderer;
 
-    public void Init(TileController tileInit, GridController grid)
+    public void Init(TileController tileInit, GridController grid, IPathFinder PFAlgorithm)
     {
-        path = null;
+        PathFinderAlgorithm = PFAlgorithm;
+        Path = null;
         moveSpeed = 5;
         AtGrid = grid;
         AtTile = tileInit;

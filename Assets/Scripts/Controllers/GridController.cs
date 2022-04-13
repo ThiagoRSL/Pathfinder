@@ -44,7 +44,7 @@ public class GridController : MonoBehaviour
             {
                 Vector3 position = new Vector2(i, j);
                 var newTile = Instantiate(tilePreFab, position, Quaternion.identity);
-                newTile.transform.SetParent(transform, true);
+                newTile.transform.SetParent(this.transform, true);
                 newTile.transform.position = position;
                 newTile.name = $"Tile {i} {j}";
                 newTile.Init(UnityEngine.Random.Range(1, 100) > 100 - complexity, i, j);
@@ -72,5 +72,5 @@ public class GridController : MonoBehaviour
     {
         Grid.Tiles[position] = tile;
     }
-    public TileController GetTileAtPosition(Vector2 position) { Grid.GetTileAtPosition(position); }
+    public TileController GetTileAtPosition(Vector2 position) { return Grid.GetTileAtPosition(position); }
 }

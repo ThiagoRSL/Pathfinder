@@ -18,7 +18,7 @@ public class DijkstraItem
     }
 }
 
-public class Dijkstra
+public class Dijkstra : IPathFinder
 {
     private DijkstraItem[] AuxiliarList;
     public Graph Graph { get; private set; }
@@ -26,9 +26,9 @@ public class Dijkstra
     private int width;
     private int height;
 
-    public Dijkstra(GridController grid)
+    public Dijkstra(Graph Graph)
     {
-        this.Graph = grid.MakeGraph();
+        this.Graph = Graph;
         this.width = Graph.Grid.Width;
         this.height = Graph.Grid.Height;
     }
