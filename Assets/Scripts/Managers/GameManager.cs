@@ -36,7 +36,7 @@ public sealed class GameManager : MonoBehaviour
 
     private int gridWidth = 10;
     private int gridHeight = 10;
-    private int gridComplexity = 10;
+    private int gridComplexity = 25;
 
     public int GridWidth { get { return gridWidth; } }
     public int GridHeight { get { return gridHeight; } }
