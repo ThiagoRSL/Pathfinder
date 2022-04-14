@@ -6,13 +6,14 @@ public class PlayerController : EntityController
 {
     [SerializeField] private SpriteRenderer _renderer;
 
-    public void Init(Tile tileInit, Grid grid)
+    public void Init(TileController tileInit, GridController grid, IPathFinder PFAlgorithm)
     {
+        PathFinderAlgorithm = PFAlgorithm;
+        Path = null;
         moveSpeed = 5;
-        Grid = grid;
-        path = null;
-        atTile = tileInit;
-        transform.position = this.atTile.GetPosition() + new Vector3(0,0,1);
+        AtGrid = grid;
+        AtTile = tileInit;
+        transform.position = AtTile.GetPosition() + new Vector3(0,0,1);
         SetColor(new Color(Random.Range(0, 255), Random.Range(0, 255), Random.Range(0, 255)));
     }
     public void SetColor(Color color)

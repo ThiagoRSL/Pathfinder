@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class Tile : MonoBehaviour
+public class TileController : MonoBehaviour
 {
     [SerializeField] 
     private Color selectedColor;
@@ -11,8 +11,11 @@ public class Tile : MonoBehaviour
     private SpriteRenderer renderer;
     [SerializeField] 
     private GameObject highlight, pathHighlight;
+    private EntityController Atop;
     private bool selected;
     private bool path;
+
+    public void SetAtop(EntityController entity) { Atop = entity; }
 
     public void Init(bool hasElevation, int i, int j)
     {
@@ -97,7 +100,7 @@ public class Tile : MonoBehaviour
         3 => new Color32(80, 0, 0, 255),
     };
 
-    public static float Unevenness(Tile a, Tile b)
+    public static float Unevenness(TileController a, TileController b)
     {
         return 1+Mathf.Abs(a.GetElevation() - b.GetElevation());
     }

@@ -18,7 +18,7 @@ public class DijkstraItem
     }
 }
 
-public class Dijkstra
+public class Dijkstra : IPathFinder
 {
     private DijkstraItem[] AuxiliarList;
     public Graph Graph { get; private set; }
@@ -26,9 +26,9 @@ public class Dijkstra
     private int width;
     private int height;
 
-    public Dijkstra(GridController grid)
+    public Dijkstra(Graph Graph)
     {
-        this.Graph = grid.MakeGraph();
+        this.Graph = Graph;
         this.width = Graph.Grid.Width;
         this.height = Graph.Grid.Height;
     }
@@ -36,19 +36,18 @@ public class Dijkstra
 
     public void InitializeList()
     {
-        this.AuxiliarList = new DijkstraItem[(width * height)];
+        AuxiliarList = new DijkstraItem[(width * height)];
 
         for (int i = 0; i < width; i++)
         {
             for (int j = 0; j < height; j++)
             {
-                this.AuxiliarList[(i * height) + j] = new DijkstraItem(Graph.GetVertex(i, j));
-                Debug.Log((i * height) + j);
+                AuxiliarList[(i * height) + j] = new DijkstraItem(Graph.GetVertex(i, j));
             }
-        }
+        }        
     }
 
-    public List<Tile> FindPath(Vector3 originCord, Vector3 targetCord)
+    public List<TileController> FindPath(Vector3 originCord, Vector3 targetCord)
     {
         Vertex target = Graph.GetVertex((int)targetCord.x, (int)targetCord.y);
         this.InitializeList();
@@ -67,9 +66,6 @@ public class Dijkstra
                 }
             }
             if(item == null) break;
-            //Debug.Log(item.vertex.tile.GetPosition().x);
-            //Debug.Log(item.vertex.tile.GetPosition().y);
-
 
             if (item.vertex.north != null)
             {
@@ -128,21 +124,20 @@ public class Dijkstra
         return this.GetShortestPath(originCord, targetCord);
     }
 
-    public List<Tile> GetShortestPath(Vector2 originCord, Vector2 targetCord)
+    public List<TileController> GetShortestPath(Vector2 originCord, Vector2 targetCord)
     {
-        DijkstraItem originItem = this.AuxiliarList[(int)((originCord.x * height) + originCord.y)];
-        DijkstraItem item = this.AuxiliarList[(int)((targetCord.x * height) + targetCord.y)];
+        DijkstraItem originItem = AuxiliarList[(int)((originCord.x * height) + originCord.y)];
+        DijkstraItem item = AuxiliarList[(int)((targetCord.x * height) + targetCord.y)];
 
-        List<Tile> path = new List<Tile>();
-        Vertex v = this.AuxiliarList[(int)((targetCord.x * height) + targetCord.y)].vertex;
+        List<TileController> path = new List<TileController>();
+        Vertex v = AuxiliarList[(int)((targetCord.x * height) + targetCord.y)].vertex;
         Vector2 position;
 
         while (item != originItem && item != null)
         {
-            //Debug.Log(item.previousVertex);
             position = item.previousVertex.tile.GetPosition();
             path.Add(item.vertex.tile);
-            item = this.AuxiliarList[(int)((position.x * height) + position.y)];
+            item = AuxiliarList[(int)((position.x * height) + position.y)];
         }
         path.Reverse();
         return path;
