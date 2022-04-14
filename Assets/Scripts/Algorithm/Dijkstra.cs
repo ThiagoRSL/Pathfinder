@@ -36,16 +36,15 @@ public class Dijkstra : IPathFinder
 
     public void InitializeList()
     {
-        this.AuxiliarList = new DijkstraItem[(width * height)];
+        AuxiliarList = new DijkstraItem[(width * height)];
 
         for (int i = 0; i < width; i++)
         {
             for (int j = 0; j < height; j++)
             {
-                this.AuxiliarList[(i * height) + j] = new DijkstraItem(Graph.GetVertex(i, j));
-                Debug.Log((i * height) + j);
+                AuxiliarList[(i * height) + j] = new DijkstraItem(Graph.GetVertex(i, j));
             }
-        }
+        }        
     }
 
     public List<TileController> FindPath(Vector3 originCord, Vector3 targetCord)
@@ -67,9 +66,6 @@ public class Dijkstra : IPathFinder
                 }
             }
             if(item == null) break;
-            //Debug.Log(item.vertex.tile.GetPosition().x);
-            //Debug.Log(item.vertex.tile.GetPosition().y);
-
 
             if (item.vertex.north != null)
             {
@@ -130,19 +126,18 @@ public class Dijkstra : IPathFinder
 
     public List<TileController> GetShortestPath(Vector2 originCord, Vector2 targetCord)
     {
-        DijkstraItem originItem = this.AuxiliarList[(int)((originCord.x * height) + originCord.y)];
-        DijkstraItem item = this.AuxiliarList[(int)((targetCord.x * height) + targetCord.y)];
+        DijkstraItem originItem = AuxiliarList[(int)((originCord.x * height) + originCord.y)];
+        DijkstraItem item = AuxiliarList[(int)((targetCord.x * height) + targetCord.y)];
 
         List<TileController> path = new List<TileController>();
-        Vertex v = this.AuxiliarList[(int)((targetCord.x * height) + targetCord.y)].vertex;
+        Vertex v = AuxiliarList[(int)((targetCord.x * height) + targetCord.y)].vertex;
         Vector2 position;
 
         while (item != originItem && item != null)
         {
-            //Debug.Log(item.previousVertex);
             position = item.previousVertex.tile.GetPosition();
             path.Add(item.vertex.tile);
-            item = this.AuxiliarList[(int)((position.x * height) + position.y)];
+            item = AuxiliarList[(int)((position.x * height) + position.y)];
         }
         path.Reverse();
         return path;

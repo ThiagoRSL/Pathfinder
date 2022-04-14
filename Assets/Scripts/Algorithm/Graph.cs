@@ -7,10 +7,10 @@ public class Vertex
     public TileController tile;
     public float elevation;
 
-    public Arris north;
-    public Arris east;
-    public Arris west;
-    public Arris south;
+    public Edge north;
+    public Edge east;
+    public Edge west;
+    public Edge south;
 
     public Vertex(TileController tile)
     {
@@ -24,13 +24,13 @@ public class Vertex
     }
 }
 
-public class Arris
+public class Edge
 {
     public Vertex vertexA;
     public Vertex vertexB;
     public float cost;
 
-    public Arris(Vertex a, Vertex b)
+    public Edge(Vertex a, Vertex b)
     {
         this.vertexA = a;
         this.vertexB = b;
@@ -57,8 +57,8 @@ public class Graph
         this.width = Grid.Width;
         this.height = Grid.Height;
 
-        this.MapVertexes();
-        this.MapArrises();
+        MapVertexes();
+        MapEdges();
     }
 
     public void MapVertexes()
@@ -73,34 +73,34 @@ public class Graph
             }
         }
     }
-    public void MapArrises()
+    public void MapEdges()
     {
-        //Mapping the Arrises
+        //Mapping the edges
         for (int i = 0; i < width; i++)
         {
             for (int j = 0; j < height; j++)
             {
                 if (this.vertexes[i, j].west == null && i > 0)
                 {
-                    Arris arris = new Arris(this.vertexes[i, j], this.vertexes[i - 1, j]);
+                    Edge arris = new Edge(this.vertexes[i, j], this.vertexes[i - 1, j]);
                     this.vertexes[i, j].west = arris;
                     this.vertexes[i - 1, j].east = arris;
                 }
                 if (this.vertexes[i, j].east == null && i < (width - 1))
                 {
-                    Arris arris = new Arris(this.vertexes[i, j], this.vertexes[i + 1, j]);
+                    Edge arris = new Edge(this.vertexes[i, j], this.vertexes[i + 1, j]);
                     this.vertexes[i, j].east = arris;
                     this.vertexes[i + 1, j].west = arris;
                 }
                 if (this.vertexes[i, j].north == null && j < (height - 1))
                 {
-                    Arris arris = new Arris(this.vertexes[i, j], this.vertexes[i, j + 1]);
+                    Edge arris = new Edge(this.vertexes[i, j], this.vertexes[i, j + 1]);
                     this.vertexes[i, j].north = arris;
                     this.vertexes[i, j + 1].south = arris;
                 }
                 if (this.vertexes[i, j].south == null && j > 0)
                 {
-                    Arris arris = new Arris(this.vertexes[i, j], this.vertexes[i, j - 1]);
+                    Edge arris = new Edge(this.vertexes[i, j], this.vertexes[i, j - 1]);
                     this.vertexes[i, j].south = arris;
                     this.vertexes[i, j - 1].north = arris;
                 }
