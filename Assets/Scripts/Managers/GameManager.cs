@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 using Random = UnityEngine.Random;
@@ -33,10 +34,12 @@ public sealed class GameManager : MonoBehaviour
 
     public PlayerController Player { get; private set; }
     public GridController Grid { get; private set; }
+    public IPathFinder Pathfinder;
 
     private int gridWidth = 10;
     private int gridHeight = 10;
     private int gridComplexity = 25;
+    private int PFAlgorithm = 0;
 
     public int GridWidth { get { return gridWidth; } }
     public int GridHeight { get { return gridHeight; } }
@@ -45,10 +48,12 @@ public sealed class GameManager : MonoBehaviour
     public void SetGridWidth(string val) { int.TryParse(val, out gridWidth); }
     public void SetGridHeight(string val) { int.TryParse(val, out gridHeight); }
     public void SetGridComplexity(string val) { int.TryParse(val, out gridComplexity); }
+    public void SetPFAlgorithm(Dropdown change) { PFAlgorithm = change.value; }
 
     public void SetGame()
     {
         SetGrid();
+        SetPathfinder();
         SetPlayer();
         SetCamera();
     }
@@ -67,8 +72,23 @@ public sealed class GameManager : MonoBehaviour
     {
         TileController playerTile = Grid.GetTileAtPosition(new Vector2(Random.Range(0, gridWidth), Random.Range(0, gridHeight)));
         Player = Instantiate(playerPreFab, playerTile.GetPosition() + new Vector3(0, 0, 1), Quaternion.identity);
-        Player.Init(playerTile, Grid, new Dijkstra(Grid.MakeGraph()));
+        Player.Init(playerTile, Grid, Pathfinder);
         Grid.PutEntity(Player, playerTile);
+    }
+
+    public void SetPathfinder()
+    {
+        switch (PFAlgorithm) 
+        {
+            case 1: //"Astar"
+                Pathfinder = new Astar(Grid.MakeGraph());
+                break;
+            case 0: //"Dijkstra"
+            default:
+                Pathfinder = new Dijkstra(Grid.MakeGraph());
+                break;
+        }
+
     }
 
     public void SetCamera()
@@ -76,8 +96,6 @@ public sealed class GameManager : MonoBehaviour
         Camera.main.transform.position = new Vector3((float)gridWidth / 2 - 0.5f, (float)gridHeight / 2 - 0.5f, -10);
         Camera.main.orthographicSize = 10;
     }
-
-
 
 
     void OnEnable()
