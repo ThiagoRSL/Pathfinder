@@ -143,5 +143,18 @@ public class Dijkstra : IPathFinder
         path.Reverse();
         return path;
     }
+    public int CountClosed()
+    {
+        int count = 0;
+        for (int i = 0; i < width; i++)
+        {
+            for (int j = 0; j < height; j++)
+            {
+                if (!AuxiliarList[(i * height) + j].Open) count++;
+            }
+        }
+        return count;
+    }
+
 }
 

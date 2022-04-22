@@ -83,6 +83,10 @@ public class GridController : MonoBehaviour
         //Comparing Nodes//
         List<TileController> dijkstra = PFDijkstra.FindPath(start, target);
         List<TileController> astar = PFAStar.FindPath(start, target);
+        Debug.Log("Dijkstra closed nodes: ");
+        Debug.Log(PFDijkstra.CountClosed());
+        Debug.Log("Astar closed nodes: ");
+        Debug.Log(PFAStar.CountClosed());
         return astar;
     }
 }
