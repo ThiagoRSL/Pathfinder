@@ -29,7 +29,8 @@ public static class GridToGraph
         {
             for (int j = 0; j < height; j++)
             {
-                graph.SetVertex(IndexFrom2D(i, j), new Vertex(IndexFrom2D(i, j)));
+                int id = IndexFrom2D(i, j);
+                graph.SetVertex(id, new Vertex(id));
             }
         }
     }

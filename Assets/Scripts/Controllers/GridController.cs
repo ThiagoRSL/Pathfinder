@@ -33,7 +33,7 @@ public class Grid
 
 public class GridController : MonoBehaviour
 {
-    //public Dijkstra PFDijkstra;
+    public Dijkstra PFDijkstra;
     public Astar PFAstar;
     //public HPAstar PFHPAstar;
 
@@ -73,8 +73,8 @@ public class GridController : MonoBehaviour
         }
 
         SetGraph();
-        //PFDijkstra = new Dijkstra(Graph);
-        PFAstar = new Astar(Graph);
+        PFDijkstra = new Dijkstra(Graph);
+        PFAstar = new Astar(Graph, width);
         //PFHPAstar = new HPAstar(Graph);
     }
     public void PutEntity(EntityController entity, TileController tile)
@@ -98,9 +98,9 @@ public class GridController : MonoBehaviour
     {
         //Comparing Nodes//
 
-        //List<TileController> dijkstra = PFDijkstra.FindPath(start, target);
-        //Debug.Log("Dijkstra closed nodes: ");
-        // Debug.Log(PFDijkstra.CountClosed());
+        List<int> DijkstraIDs = PFDijkstra.FindPath(IndexFrom2D(start), IndexFrom2D(target));
+        Debug.Log("Dijkstra closed nodes: ");
+        Debug.Log(PFDijkstra.CountClosed());
 
         //List<TileController> hpastar = PFAstar.FindPath(start, target);
         //Debug.Log("HPAstar closed nodes: ");

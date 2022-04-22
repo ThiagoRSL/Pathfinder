@@ -29,7 +29,7 @@ public class Dijkstra : IPathFinder
 
     public Dijkstra(Graph Graph)
     {
-        this.Graph = Graph;
+        Graph = Graph;
     }
 
     public void InitializeList()
@@ -38,6 +38,7 @@ public class Dijkstra : IPathFinder
 
         for (int i = 0; i < Graph.Size; i++)
         {
+            Debug.Log(Graph.Size);
             Vertex v = Graph.GetVertex(i);
             AuxiliarList[v.Id] = new DijkstraItem(v);
         }

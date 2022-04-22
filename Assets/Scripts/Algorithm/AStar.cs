@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,26 +28,29 @@ public class Astar : IPathFinder
 {
     private AstarItem[] AuxiliarList;
     public Graph Graph { get; private set; }
+    private int Width;
     
-    public Astar(Graph Graph)
+    public Astar(Graph Graph, int width)
     {
-        this.Graph = Graph;
+        Width = width;
+        Graph = Graph;
     }
-    public void InitializeList()
+    public void InitializeList(int target)
     {
+        Debug.Log(Graph.Size);
         AuxiliarList = new AstarItem[Graph.Size];
-
         for (int i = 0; i < Graph.Size; i++)
         {
+            Debug.Log(i);
             Vertex v = Graph.GetVertex(i);
             AuxiliarList[v.Id] = new AstarItem(v);
-            //AuxiliarList[v.Id].HeuristicCost = EuclidieanHeuristic();
+            AuxiliarList[v.Id].HeuristicCost = ManhattanHeuristic(v.Id, target);
         }
     }
     public List<int> FindPath(int start, int target)
     {
+        InitializeList(target);
         Vertex vertexTarget = Graph.GetVertex(target);
-        InitializeList();
 
         AuxiliarList[start].SetInitial();
         while (true)
@@ -114,11 +118,15 @@ public class Astar : IPathFinder
         }
         return count;
     }
-    /*
-    static public float EuclidieanHeuristic(int actual, int target)
+    public float ManhattanHeuristic(int actual, int target)
     {
-        //return Mathf.Sqrt(Mathf.Pow(Mathf.Abs(actualCord.x - targetCord.x), 2) + Mathf.Pow(Mathf.Abs(actualCord.y - targetCord.y), 2));//FIX
+        int actualX = actual % Width;
+        int actualY = (actual - actualX) / Width;
+
+        int targetX = target % Width;
+        int targetY = (target - targetX) / Width;
+
+        return Math.Abs(actualX - targetX) + Math.Abs(actualY - targetY);
     }
-    */
 }
 
