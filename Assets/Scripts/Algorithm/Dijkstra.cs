@@ -14,7 +14,7 @@ public class DijkstraItem
     {
         Vertex = vertex;
         PreviousVertex = null;
-        TotalCost = (float) int.MaxValue;
+        TotalCost = (float)int.MaxValue;
         Open = true;
     }
 }
@@ -30,59 +30,54 @@ public class Dijkstra : IPathFinder
     public Dijkstra(Graph Graph)
     {
         this.Graph = Graph;
-        this.width = Graph.Grid.Width;
-        this.height = Graph.Grid.Height;
     }
-
 
     public void InitializeList()
     {
-        AuxiliarList = new DijkstraItem[(width * height)];
+        AuxiliarList = new DijkstraItem[Graph.Size];
 
-        for (int i = 0; i < width; i++)
+        for (int i = 0; i < Graph.Size; i++)
         {
-            for (int j = 0; j < height; j++)
-            {
-                AuxiliarList[(i * height) + j] = new DijkstraItem(Graph.GetVertex(i, j));
-            }
-        }        
+            Vertex v = Graph.GetVertex(i);
+            AuxiliarList[v.Id] = new DijkstraItem(v);
+        }
     }
 
-    public List<TileController> FindPath(Vector3 originCord, Vector3 targetCord)
+    public List<int> FindPath(int start, int target)
     {
-        Vertex target = Graph.GetVertex((int)targetCord.x, (int)targetCord.y);
+        Vertex vertexTarget = Graph.GetVertex(target);
         this.InitializeList();
 
-        this.AuxiliarList[(int)((originCord.x * height) + originCord.y)].TotalCost = 0;
+        this.AuxiliarList[start].TotalCost = 0;
         while (true)
         {
             int menor = int.MaxValue;
             DijkstraItem item = null;
-            for (int i = 0; i < this.AuxiliarList.Length; i++)
+            for (int i = 0; i < AuxiliarList.Length; i++)
             {
-                if (menor > this.AuxiliarList[i].TotalCost && this.AuxiliarList[i].Open)
+                if (menor > AuxiliarList[i].TotalCost && AuxiliarList[i].Open)
                 {
-                    item = this.AuxiliarList[i];
-                    menor = (int) item.TotalCost;
+                    item = AuxiliarList[i];
+                    menor = (int)item.TotalCost;
                 }
             }
-            if(item == null) return null;
+            if (item == null) return null;
             item.Open = false;
-            if (item.Vertex == target) return this.GetShortestPath(originCord, targetCord);
+            if (item.Vertex == vertexTarget) return this.GetShortestPath(start, target);
 
             string[] directions = { "U", "R", "D", "L" };
 
             foreach (string d in directions)
             {
-                if (item.Vertex.Edges.ContainsKey(d))
+                if (item.Vertex.HasEdge(d))
                 {
-                    Vector2 nextItemPosition = item.Vertex.Edges[d].GetTo(item.Vertex).tile.GetPosition();
-                    if (AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)].Open)
+                    Vertex nextVertex = item.Vertex.GetAdjacent(d);
+                    if (AuxiliarList[nextVertex.Id].Open)
                     {
-                        DijkstraItem nextItem = AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)];
-                        if ((item.Vertex.Edges[d].cost + item.TotalCost) < nextItem.TotalCost)
+                        DijkstraItem nextItem = AuxiliarList[nextVertex.Id];
+                        if ((item.Vertex.GetEdge(d).Cost + item.TotalCost) < nextItem.TotalCost)
                         {
-                            nextItem.TotalCost = item.Vertex.Edges[d].cost + item.TotalCost;
+                            nextItem.TotalCost = item.Vertex.GetEdge(d).Cost + item.TotalCost;
                             nextItem.PreviousVertex = item.Vertex;
                         }
                     }
@@ -91,20 +86,19 @@ public class Dijkstra : IPathFinder
         }
     }
 
-    public List<TileController> GetShortestPath(Vector2 originCord, Vector2 targetCord)
+    public List<int> GetShortestPath(int start, int target)
     {
-        DijkstraItem originItem = AuxiliarList[(int)((originCord.x * height) + originCord.y)];
-        DijkstraItem item = AuxiliarList[(int)((targetCord.x * height) + targetCord.y)];
+        DijkstraItem originItem = AuxiliarList[start];
+        DijkstraItem item = AuxiliarList[target];
 
-        List<TileController> path = new List<TileController>();
-        Vertex v = AuxiliarList[(int)((targetCord.x * height) + targetCord.y)].Vertex;
-        Vector2 position;
+        List<int> path = new List<int>();
+        Vertex v = AuxiliarList[target].Vertex;
 
         while (item != originItem && item != null)
         {
-            position = item.PreviousVertex.tile.GetPosition();
-            path.Add(item.Vertex.tile);
-            item = AuxiliarList[(int)((position.x * height) + position.y)];
+            int PreviousId = item.PreviousVertex.Id;
+            path.Add(item.Vertex.Id);
+            item = AuxiliarList[PreviousId];
         }
         path.Reverse();
         return path;
@@ -112,12 +106,9 @@ public class Dijkstra : IPathFinder
     public int CountClosed()
     {
         int count = 0;
-        for (int i = 0; i < width; i++)
+        for (int i = 0; i < Graph.Size; i++)
         {
-            for (int j = 0; j < height; j++)
-            {
-                if (!AuxiliarList[(i * height) + j].Open) count++;
-            }
+            if (!AuxiliarList[i].Open) count++;
         }
         return count;
     }

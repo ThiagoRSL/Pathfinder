@@ -27,38 +27,28 @@ public class Astar : IPathFinder
 {
     private AstarItem[] AuxiliarList;
     public Graph Graph { get; private set; }
-
-    private int width;
-    private int height;
-
+    
     public Astar(Graph Graph)
     {
         this.Graph = Graph;
-        this.width = Graph.Grid.Width;
-        this.height = Graph.Grid.Height;
     }
-
-
-    public void InitializeList(Vector2 targetCord)
+    public void InitializeList()
     {
-        AuxiliarList = new AstarItem[(width * height)];
+        AuxiliarList = new AstarItem[Graph.Size];
 
-        for (int i = 0; i < width; i++)
+        for (int i = 0; i < Graph.Size; i++)
         {
-            for (int j = 0; j < height; j++)
-            {
-                AuxiliarList[(i * height) + j] = new AstarItem(Graph.GetVertex(i, j));
-                AuxiliarList[(i * height) + j].HeuristicCost = Astar.EuclidieanHeuristic(new Vector3(i, j), targetCord) * (float) 0.1;
-            }
-        }        
+            Vertex v = Graph.GetVertex(i);
+            AuxiliarList[v.Id] = new AstarItem(v);
+            //AuxiliarList[v.Id].HeuristicCost = EuclidieanHeuristic();
+        }
     }
-
-    public List<TileController> FindPath(Vector3 originCord, Vector3 targetCord)
+    public List<int> FindPath(int start, int target)
     {
-        Vertex target = Graph.GetVertex((int)targetCord.x, (int)targetCord.y);
-        InitializeList(targetCord);
+        Vertex vertexTarget = Graph.GetVertex(target);
+        InitializeList();
 
-        AuxiliarList[(int)((originCord.x * height) + originCord.y)].SetInitial();
+        AuxiliarList[start].SetInitial();
         while (true)
         {
             float menor = float.MaxValue;
@@ -73,21 +63,21 @@ public class Astar : IPathFinder
             }
             if (item == null) return null;
             item.Open = false;
-            if (item.Vertex == target) return this.GetShortestPath(originCord, targetCord);
+            if (item.Vertex == vertexTarget) return this.GetShortestPath(start, target);
 
             string[] directions = { "U", "R", "D", "L" };
 
             foreach (string d in directions)
             {
-                if (item.Vertex.Edges.ContainsKey(d))
+                if (item.Vertex.HasEdge(d))
                 {
-                    Vector2 nextItemPosition = item.Vertex.Edges[d].GetTo(item.Vertex).tile.GetPosition();
-                    if (AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)].Open)
+                    Vertex nextVertex = item.Vertex.GetAdjacent(d);
+                    if (AuxiliarList[nextVertex.Id].Open)
                     {
-                        AstarItem nextItem = AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)];
-                        if ((item.Vertex.Edges[d].cost + item.TotalCost) < (nextItem.TotalCost - nextItem.HeuristicCost))
+                        AstarItem nextItem = AuxiliarList[nextVertex.Id];
+                        if ((item.Vertex.GetEdge(d).Cost + item.TotalCost) < (nextItem.TotalCost - nextItem.HeuristicCost))
                         {
-                            nextItem.TotalCost = item.Vertex.Edges[d].cost + item.TotalCost + nextItem.HeuristicCost;
+                            nextItem.TotalCost = item.Vertex.GetEdge(d).Cost + item.TotalCost + nextItem.HeuristicCost;
                             nextItem.PreviousVertex = item.Vertex;
                         }
                     }
@@ -97,20 +87,19 @@ public class Astar : IPathFinder
         }
     }
 
-    public List<TileController> GetShortestPath(Vector2 originCord, Vector2 targetCord)
+    public List<int> GetShortestPath(int start, int target)
     {
-        AstarItem originItem = AuxiliarList[(int)((originCord.x * height) + originCord.y)];
-        AstarItem item = AuxiliarList[(int)((targetCord.x * height) + targetCord.y)];
+        AstarItem originItem = AuxiliarList[start];
+        AstarItem item = AuxiliarList[target];
 
-        List<TileController> path = new List<TileController>();
-        Vertex v = AuxiliarList[(int)((targetCord.x * height) + targetCord.y)].Vertex;
-        Vector2 position;
+        List<int> path = new List<int>();
+        Vertex v = AuxiliarList[target].Vertex;
 
         while (item != originItem && item != null)
         {
-            position = item.PreviousVertex.tile.GetPosition();
-            path.Add(item.Vertex.tile);
-            item = AuxiliarList[(int)((position.x * height) + position.y)];
+            int PreviousId = item.PreviousVertex.Id;
+            path.Add(item.Vertex.Id);
+            item = AuxiliarList[PreviousId];
         }
         path.Reverse();
         return path;
@@ -119,19 +108,17 @@ public class Astar : IPathFinder
     public int CountClosed()
     {
         int count = 0;
-        for (int i = 0; i < width; i++)
+        for (int i = 0; i < Graph.Size; i++)
         {
-            for (int j = 0; j < height; j++)
-            {
-                if(!AuxiliarList[(i * height) + j].Open) count++;
-            }
+            if (!AuxiliarList[i].Open) count++;
         }
         return count;
     }
-
-    static public float EuclidieanHeuristic(Vector2 actualCord, Vector2 targetCord)
+    /*
+    static public float EuclidieanHeuristic(int actual, int target)
     {
-        return Mathf.Sqrt(Mathf.Pow(Mathf.Abs(actualCord.x - targetCord.x), 2) + Mathf.Pow(Mathf.Abs(actualCord.y - targetCord.y), 2));
+        //return Mathf.Sqrt(Mathf.Pow(Mathf.Abs(actualCord.x - targetCord.x), 2) + Mathf.Pow(Mathf.Abs(actualCord.y - targetCord.y), 2));//FIX
     }
+    */
 }
 

@@ -1,14 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class Grid
 {
     public Dictionary<Vector3, TileController> Tiles;
     public List<EntityController> Entities;
-    public int Complexity { get; set; }
-    public int Width { get; set; }
-    public int Height { get; set; }
+    public int Complexity { get; private set; }
+    public int Width { get; private set; }
+    public int Height { get; private set; }
 
     public Grid(int width, int height, int complexity)
     {
@@ -32,12 +33,26 @@ public class Grid
 
 public class GridController : MonoBehaviour
 {
-    public Astar PFAStar;
-    public Dijkstra PFDijkstra;
+    //public Dijkstra PFDijkstra;
+    public Astar PFAstar;
+    //public HPAstar PFHPAstar;
+
     private Graph Graph;
     private Grid Grid;
 
-    private void SetGraph(){ Graph = new Graph(Grid);}
+    public int IndexFrom2D(int i, int j) { return (j * Grid.Width) + i; }
+    public int IndexFrom2D(Vector2 v) { return ((int)v.y * Grid.Width) + (int)v.x; }
+    public Vector2 Vector2FromIndex(int index) 
+    {
+        int x = (index % Grid.Width);
+        int y = (int) Mathf.Floor(index / Grid.Width);
+        return new Vector2(x, y);
+    }
+
+    private void SetGraph()
+    { 
+        Graph = GridToGraph.Convert(Grid);
+    }
 
     public void Init(int width, int height, int complexity, TileController tilePreFab)
     {
@@ -58,8 +73,9 @@ public class GridController : MonoBehaviour
         }
 
         SetGraph();
-        PFAStar = new Astar(Graph);
-        PFDijkstra = new Dijkstra(Graph);
+        //PFDijkstra = new Dijkstra(Graph);
+        PFAstar = new Astar(Graph);
+        //PFHPAstar = new HPAstar(Graph);
     }
     public void PutEntity(EntityController entity, TileController tile)
     {
@@ -81,12 +97,25 @@ public class GridController : MonoBehaviour
     public List<TileController> FindPath(Vector2 start, Vector2 target)
     {
         //Comparing Nodes//
-        List<TileController> dijkstra = PFDijkstra.FindPath(start, target);
-        List<TileController> astar = PFAStar.FindPath(start, target);
-        Debug.Log("Dijkstra closed nodes: ");
-        Debug.Log(PFDijkstra.CountClosed());
-        Debug.Log("Astar closed nodes: ");
-        Debug.Log(PFAStar.CountClosed());
-        return astar;
+
+        //List<TileController> dijkstra = PFDijkstra.FindPath(start, target);
+        //Debug.Log("Dijkstra closed nodes: ");
+        // Debug.Log(PFDijkstra.CountClosed());
+
+        //List<TileController> hpastar = PFAstar.FindPath(start, target);
+        //Debug.Log("HPAstar closed nodes: ");
+        //Debug.Log(PFHPAstar.CountClosed());
+
+        List<TileController> Path = new List<TileController>();
+        List<int> PathIds = PFAstar.FindPath(IndexFrom2D(start), IndexFrom2D(target));
+        while(PathIds.Count > 0)
+        {
+            Path.Add(GetTileAtPosition(Vector2FromIndex(PathIds[0])));
+            PathIds.RemoveAt(0);
+        }
+        Debug.Log("Astar closed nodes: " + PFAstar.CountClosed().ToString());
+
+        return Path;
     }
+
 }

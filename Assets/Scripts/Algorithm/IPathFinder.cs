@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface IPathFinder
 {
-    public List<TileController> FindPath(Vector3 originCord, Vector3 targetCord);
+    public List<int> FindPath(int start, int target);
 }

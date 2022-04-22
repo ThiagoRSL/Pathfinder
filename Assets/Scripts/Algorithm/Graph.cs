@@ -4,103 +4,72 @@ using UnityEngine;
 
 public class Vertex
 {
-    public TileController tile;
-    public float elevation;
-    public Dictionary<string, Edge> Edges;
+    public int Id { get; private set; }
+    private Dictionary<string, Edge> Edges;
 
-    public Vertex(TileController tile)
+    public Vertex(int id)
     {
-        this.tile = tile;
-        this.elevation = tile.GetElevation();
-        this.Edges = new Dictionary<string, Edge>();
+        Id = id;
+        Edges = new Dictionary<string, Edge>();
+    }
+    public bool HasEdge(string key)
+    {
+        return Edges.ContainsKey(key);
+    }
+    public void SetEdge(string key, Edge edge)
+    {
+        Edges.Add(key, edge);
+    }
+    public Edge GetEdge(string key)
+    {
+        return Edges[key];
+    }
+    public Vertex GetAdjacent(string key)
+    {
+        if (Edges.TryGetValue(key, out Edge edge))
+        {
+            return edge.GetOtherVertex(this);
+        }
+        return null;
     }
 }
 
 public class Edge
 {
-    public Vertex vertexA;
-    public Vertex vertexB;
-    public float cost;
+    public Vertex VertexA;
+    public Vertex VertexB;
+    public float Cost { get; private set; }
 
-    public Edge(Vertex a, Vertex b)
+    public Edge(Vertex a, Vertex b, float cost)
     {
-        this.vertexA = a;
-        this.vertexB = b;
-        this.cost = 1 + Mathf.Abs(a.elevation - b.elevation);//Substituir o custo pela hipotenusa
+        VertexA = a;
+        VertexB = b;
+        Cost = cost;
     }
-    public Vertex GetTo(Vertex from)
+    public Vertex GetOtherVertex(Vertex from)
     {
-        if(from == this.vertexA) return this.vertexB;
-        else return this.vertexA;
+        if(from == this.VertexA) return this.VertexB;
+        else return this.VertexA;
     }
 }
 
 public class Graph
 {
-    public Grid Grid { get; private set; }
-    private Vertex[,] vertexes;
+    private Vertex[] Vertexes;
+    public int Size { get; private set; }
 
-    private int width;
-    private int height;
-
-    public Graph(Grid grid)
+    public Graph(int size)
     {
-        this.Grid = grid;
-        this.width = Grid.Width;
-        this.height = Grid.Height;
-
-        MapVertexes();
-        MapEdges();
+        Size = size;
+        Vertexes = new Vertex[size];
     }
 
-    public void MapVertexes()
+    public Vertex GetVertex(int x)
     {
-        //Mapping the Vertexes, 
-        this.vertexes = new Vertex[width, height];
-        for (int i = 0; i < width; i++)
-        {
-            for (int j = 0; j < height; j++)
-            {
-                this.vertexes[i, j] = new Vertex(Grid.GetTileAtPosition(new Vector2(i, j))); 
-            }
-        }
+        return Vertexes[x];
     }
-    public void MapEdges()
+    public void SetVertex(int x, Vertex vertex)
     {
-        //Mapping the edges
-        for (int i = 0; i < width; i++)
-        {
-            for (int j = 0; j < height; j++)
-            {
-                if (!vertexes[i, j].Edges.ContainsKey("L") && i > 0)
-                {
-                    Edge arris = new Edge(this.vertexes[i, j], this.vertexes[i - 1, j]);
-                    vertexes[i, j].Edges.Add("L", arris);
-                    vertexes[i - 1, j].Edges.Add("R", arris);
-                }
-                if (!vertexes[i, j].Edges.ContainsKey("R") && i < (width - 1))
-                {
-                    Edge arris = new Edge(this.vertexes[i, j], this.vertexes[i + 1, j]);
-                    this.vertexes[i, j].Edges.Add("R", arris);
-                    this.vertexes[i + 1, j].Edges.Add("L", arris);
-                }
-                if (!vertexes[i, j].Edges.ContainsKey("U") && j < (height - 1))
-                {
-                    Edge arris = new Edge(this.vertexes[i, j], this.vertexes[i, j + 1]);
-                    this.vertexes[i, j].Edges.Add("U", arris);
-                    this.vertexes[i, j + 1].Edges.Add("D", arris);
-                }
-                if (!vertexes[i, j].Edges.ContainsKey("D") && j > 0)
-                {
-                    Edge arris = new Edge(this.vertexes[i, j], this.vertexes[i, j - 1]);
-                    this.vertexes[i, j].Edges.Add("D", arris);
-                    this.vertexes[i, j - 1].Edges.Add("U", arris);
-                }
-            }
-        }
-    }
-    public Vertex GetVertex(int i, int j)
-    {
-        return this.vertexes[i, j];
+        Vertexes[x] = vertex;
     }
 }
