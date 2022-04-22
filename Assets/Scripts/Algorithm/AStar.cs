@@ -48,7 +48,7 @@ public class Astar : IPathFinder
             for (int j = 0; j < height; j++)
             {
                 AuxiliarList[(i * height) + j] = new AstarItem(Graph.GetVertex(i, j));
-                AuxiliarList[(i * height) + j].HeuristicCost = Astar.EuclidieanHeuristic(new Vector3(i, j), targetCord) * 1000;
+                AuxiliarList[(i * height) + j].HeuristicCost = Astar.EuclidieanHeuristic(new Vector3(i, j), targetCord) * 0.1;
             }
         }        
     }
@@ -146,7 +146,19 @@ public class Astar : IPathFinder
             item = AuxiliarList[(int)((position.x * height) + position.y)];
         }
         path.Reverse();
+        CountOpen();
         return path;
+    }
+
+    private void CountOpen()
+    {
+        for (int i = 0; i < width; i++)
+        {
+            for (int j = 0; j < height; j++)
+            {
+                AuxiliarList[(i * height) + j] = new AstarItem(Graph.GetVertex(i, j));
+            }
+        }
     }
 
     static public float EuclidieanHeuristic(Vector2 actualCord, Vector2 targetCord)

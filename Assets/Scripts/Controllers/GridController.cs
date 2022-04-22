@@ -80,6 +80,7 @@ public class GridController : MonoBehaviour
 
     public List<TileController> FindPath(Vector2 start, Vector2 target)
     {
+        //Comparing Nodes//
         List<TileController> dijkstra = PFDijkstra.FindPath(start, target);
         List<TileController> astar = PFAStar.FindPath(start, target);
         return astar;
