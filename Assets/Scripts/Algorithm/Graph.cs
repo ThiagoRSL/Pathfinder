@@ -6,21 +6,13 @@ public class Vertex
 {
     public TileController tile;
     public float elevation;
-
-    public Edge Up;
-    public Edge Right;
-    public Edge Left;
-    public Edge Down;
+    public Dictionary<string, Edge> Edges;
 
     public Vertex(TileController tile)
     {
         this.tile = tile;
         this.elevation = tile.GetElevation();
-
-        this.Up = null;
-        this.Right = null;
-        this.Left = null;
-        this.Down = null;
+        this.Edges = new Dictionary<string, Edge>();
     }
 }
 
@@ -69,7 +61,7 @@ public class Graph
         {
             for (int j = 0; j < height; j++)
             {
-                this.vertexes[i, j] = new Vertex(Grid.GetTileAtPosition(new Vector2(i, j)));
+                this.vertexes[i, j] = new Vertex(Grid.GetTileAtPosition(new Vector2(i, j))); 
             }
         }
     }
@@ -80,29 +72,29 @@ public class Graph
         {
             for (int j = 0; j < height; j++)
             {
-                if (this.vertexes[i, j].Left == null && i > 0)
+                if (!vertexes[i, j].Edges.ContainsKey("L") && i > 0)
                 {
                     Edge arris = new Edge(this.vertexes[i, j], this.vertexes[i - 1, j]);
-                    this.vertexes[i, j].Left = arris;
-                    this.vertexes[i - 1, j].Right = arris;
+                    vertexes[i, j].Edges.Add("L", arris);
+                    vertexes[i - 1, j].Edges.Add("R", arris);
                 }
-                if (this.vertexes[i, j].Right == null && i < (width - 1))
+                if (!vertexes[i, j].Edges.ContainsKey("R") && i < (width - 1))
                 {
                     Edge arris = new Edge(this.vertexes[i, j], this.vertexes[i + 1, j]);
-                    this.vertexes[i, j].Right = arris;
-                    this.vertexes[i + 1, j].Left = arris;
+                    this.vertexes[i, j].Edges.Add("R", arris);
+                    this.vertexes[i + 1, j].Edges.Add("L", arris);
                 }
-                if (this.vertexes[i, j].Up == null && j < (height - 1))
+                if (!vertexes[i, j].Edges.ContainsKey("U") && j < (height - 1))
                 {
                     Edge arris = new Edge(this.vertexes[i, j], this.vertexes[i, j + 1]);
-                    this.vertexes[i, j].Up = arris;
-                    this.vertexes[i, j + 1].Down = arris;
+                    this.vertexes[i, j].Edges.Add("U", arris);
+                    this.vertexes[i, j + 1].Edges.Add("D", arris);
                 }
-                if (this.vertexes[i, j].Down == null && j > 0)
+                if (!vertexes[i, j].Edges.ContainsKey("D") && j > 0)
                 {
                     Edge arris = new Edge(this.vertexes[i, j], this.vertexes[i, j - 1]);
-                    this.vertexes[i, j].Down = arris;
-                    this.vertexes[i, j - 1].Up = arris;
+                    this.vertexes[i, j].Edges.Add("D", arris);
+                    this.vertexes[i, j - 1].Edges.Add("U", arris);
                 }
             }
         }

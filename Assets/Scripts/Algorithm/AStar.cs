@@ -72,66 +72,33 @@ public class Astar : IPathFinder
                 }
             }
             if (item == null) return null;
+            item.Open = false;
             if (item.Vertex == target) return this.GetShortestPath(originCord, targetCord);
 
-            if (item.Vertex.Up != null)
+            string[] directions = { "U", "R", "D", "L" };
+
+            foreach (string d in directions)
             {
-                Vector2 nextItemPosition = item.Vertex.Up.GetTo(item.Vertex).tile.GetPosition();
-                if (this.AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)].Open)
+                if (item.Vertex.Edges.ContainsKey(d))
                 {
-                    AstarItem nextItem = this.AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)];
-                    if ((item.Vertex.Up.cost + item.TotalCost) < (nextItem.TotalCost - nextItem.HeuristicCost))
+                    Vector2 nextItemPosition = item.Vertex.Edges[d].GetTo(item.Vertex).tile.GetPosition();
+                    if (AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)].Open)
                     {
-                        nextItem.TotalCost = item.Vertex.Up.cost + item.TotalCost + nextItem.HeuristicCost;
-                        nextItem.PreviousVertex = item.Vertex;
+                        AstarItem nextItem = AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)];
+                        if ((item.Vertex.Edges[d].cost + item.TotalCost) < (nextItem.TotalCost - nextItem.HeuristicCost))
+                        {
+                            nextItem.TotalCost = item.Vertex.Edges[d].cost + item.TotalCost + nextItem.HeuristicCost;
+                            nextItem.PreviousVertex = item.Vertex;
+                        }
                     }
                 }
             }
-            if (item.Vertex.Right != null)
-            {
-                Vector2 nextItemPosition = item.Vertex.Right.GetTo(item.Vertex).tile.GetPosition();
-                if (this.AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)].Open)
-                {
-                    AstarItem nextItem = this.AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)];
-                    if ((item.Vertex.Right.cost + item.TotalCost) < (nextItem.TotalCost - nextItem.HeuristicCost))
-                    {
-                        nextItem.TotalCost = item.Vertex.Right.cost + item.TotalCost + nextItem.HeuristicCost;
-                        nextItem.PreviousVertex = item.Vertex;
-                    }
-                }
-            }
-            if (item.Vertex.Left != null)
-            {
-                Vector2 nextItemPosition = item.Vertex.Left.GetTo(item.Vertex).tile.GetPosition();
-                if (this.AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)].Open)
-                {
-                    AstarItem nextItem = this.AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)];
-                    if ((item.Vertex.Left.cost + item.TotalCost) < (nextItem.TotalCost - nextItem.HeuristicCost))
-                    {
-                        nextItem.TotalCost = item.Vertex.Left.cost + item.TotalCost + nextItem.HeuristicCost;
-                        nextItem.PreviousVertex = item.Vertex;
-                    }
-                }
-            }
-            if (item.Vertex.Down != null)
-            {
-                Vector2 nextItemPosition = item.Vertex.Down.GetTo(item.Vertex).tile.GetPosition();
-                if (this.AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)].Open)
-                {
-                    AstarItem nextItem = this.AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)];
-                    if ((item.Vertex.Down.cost + item.TotalCost) < (nextItem.TotalCost - nextItem.HeuristicCost))
-                    {
-                        nextItem.TotalCost = item.Vertex.Down.cost + item.TotalCost + nextItem.HeuristicCost;
-                        nextItem.PreviousVertex = item.Vertex;
-                    }
-                }
-            }
-            item.Open = false;
+           
         }
     }
 
     public List<TileController> GetShortestPath(Vector2 originCord, Vector2 targetCord)
-    {;
+    {
         AstarItem originItem = AuxiliarList[(int)((originCord.x * height) + originCord.y)];
         AstarItem item = AuxiliarList[(int)((targetCord.x * height) + targetCord.y)];
 

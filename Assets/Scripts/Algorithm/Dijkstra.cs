@@ -67,61 +67,27 @@ public class Dijkstra : IPathFinder
                 }
             }
             if(item == null) return null;
+            item.Open = false;
             if (item.Vertex == target) return this.GetShortestPath(originCord, targetCord);
 
-            if (item.Vertex.Up != null)
+            string[] directions = { "U", "R", "D", "L" };
+
+            foreach (string d in directions)
             {
-                Vector2 nextItemPosition = item.Vertex.Up.GetTo(item.Vertex).tile.GetPosition();
-                if (this.AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)].Open)
+                if (item.Vertex.Edges.ContainsKey(d))
                 {
-                    DijkstraItem nextItem = this.AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)];
-                    if ((item.Vertex.Up.cost + item.TotalCost) < (nextItem.TotalCost))
+                    Vector2 nextItemPosition = item.Vertex.Edges[d].GetTo(item.Vertex).tile.GetPosition();
+                    if (AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)].Open)
                     {
-                        nextItem.TotalCost = (item.Vertex.Up.cost + item.TotalCost);
-                        nextItem.PreviousVertex = item.Vertex;
+                        DijkstraItem nextItem = AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)];
+                        if ((item.Vertex.Edges[d].cost + item.TotalCost) < nextItem.TotalCost)
+                        {
+                            nextItem.TotalCost = item.Vertex.Edges[d].cost + item.TotalCost;
+                            nextItem.PreviousVertex = item.Vertex;
+                        }
                     }
                 }
             }
-            if (item.Vertex.Right != null)
-            {
-                Vector2 nextItemPosition = item.Vertex.Right.GetTo(item.Vertex).tile.GetPosition();
-                if (this.AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)].Open)
-                {
-                    DijkstraItem nextItem = this.AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)];
-                    if ((item.Vertex.Right.cost + item.TotalCost) < (nextItem.TotalCost))
-                    {
-                        nextItem.TotalCost = (item.Vertex.Right.cost + item.TotalCost);
-                        nextItem.PreviousVertex = item.Vertex;
-                    }
-                }
-            }
-            if (item.Vertex.Left != null)
-            {
-                Vector2 nextItemPosition = item.Vertex.Left.GetTo(item.Vertex).tile.GetPosition();
-                if (this.AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)].Open)
-                {
-                    DijkstraItem nextItem = this.AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)];
-                    if ((item.Vertex.Left.cost + item.TotalCost) < (nextItem.TotalCost))
-                    {
-                        nextItem.TotalCost = (item.Vertex.Left.cost + item.TotalCost);
-                        nextItem.PreviousVertex = item.Vertex;
-                    }
-                }
-            }
-            if (item.Vertex.Down != null)
-            {
-                Vector2 nextItemPosition = item.Vertex.Down.GetTo(item.Vertex).tile.GetPosition();
-                if (this.AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)].Open)
-                {
-                    DijkstraItem nextItem = this.AuxiliarList[(int)((nextItemPosition.x * height) + nextItemPosition.y)];
-                    if ((item.Vertex.Down.cost + item.TotalCost) < (nextItem.TotalCost))
-                    {
-                        nextItem.TotalCost = (item.Vertex.Down.cost + item.TotalCost);
-                        nextItem.PreviousVertex = item.Vertex;
-                    }
-                }
-            }
-            item.Open = false;
         }
     }
 
