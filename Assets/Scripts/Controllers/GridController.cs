@@ -32,7 +32,12 @@ public class Grid
 
 public class GridController : MonoBehaviour
 {
+    public Astar PFAStar;
+    public Dijkstra PFDijkstra;
+    private Graph Graph;
     private Grid Grid;
+
+    private void SetGraph(){ Graph = new Graph(Grid);}
 
     public void Init(int width, int height, int complexity, TileController tilePreFab)
     {
@@ -51,10 +56,10 @@ public class GridController : MonoBehaviour
                 SetTileAtPosition(position, newTile);
             }
         }
-    }
-    public Graph MakeGraph()
-    {
-       return new Graph(Grid);
+
+        SetGraph();
+        PFAStar = new Astar(Graph);
+        PFDijkstra = new Dijkstra(Graph);
     }
     public void PutEntity(EntityController entity, TileController tile)
     {
@@ -67,10 +72,16 @@ public class GridController : MonoBehaviour
     {
         Grid.Entities.Add(entity);
     }
-    
     public void SetTileAtPosition(Vector2 position, TileController tile) 
     {
         Grid.Tiles[position] = tile;
     }
     public TileController GetTileAtPosition(Vector2 position) { return Grid.GetTileAtPosition(position); }
+
+    public List<TileController> FindPath(Vector2 start, Vector2 target)
+    {
+        List<TileController> dijkstra = PFDijkstra.FindPath(start, target);
+        List<TileController> astar = PFAStar.FindPath(start, target);
+        return astar;
+    }
 }

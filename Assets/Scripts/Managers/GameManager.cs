@@ -34,7 +34,6 @@ public sealed class GameManager : MonoBehaviour
 
     public PlayerController Player { get; private set; }
     public GridController Grid { get; private set; }
-    public IPathFinder Pathfinder;
 
     private int gridWidth = 10;
     private int gridHeight = 10;
@@ -72,22 +71,22 @@ public sealed class GameManager : MonoBehaviour
     {
         TileController playerTile = Grid.GetTileAtPosition(new Vector2(Random.Range(0, gridWidth), Random.Range(0, gridHeight)));
         Player = Instantiate(playerPreFab, playerTile.GetPosition() + new Vector3(0, 0, 1), Quaternion.identity);
-        Player.Init(playerTile, Grid, Pathfinder);
+        Player.Init(playerTile, Grid);
         Grid.PutEntity(Player, playerTile);
     }
 
     public void SetPathfinder()
     {
-        switch (PFAlgorithm) 
+        /*switch (PFAlgorithm) 
         {
             case 1: //"Astar"
-                Pathfinder = new Astar(Grid.MakeGraph());
+                Grid.Pathfinder = new Astar(Grid.MakeGraph());
                 break;
             case 0: //"Dijkstra"
             default:
-                Pathfinder = new Dijkstra(Grid.MakeGraph());
+                Grid.Pathfinder = new Dijkstra(Grid.MakeGraph());
                 break;
-        }
+        }*/
 
     }
 

@@ -8,7 +8,6 @@ public abstract class EntityController : MonoBehaviour
     protected TileController AtTile;
     protected List<TileController> Path;
     protected TileController TargetTile;
-    protected IPathFinder PathFinderAlgorithm;
 
     protected bool isMoving;
     protected int moveSpeed;
@@ -27,7 +26,7 @@ public abstract class EntityController : MonoBehaviour
         TargetTile = AtGrid.GetTileAtPosition(position);
         TargetTile.SelectTile();
 
-        SetPath(PathFinderAlgorithm.FindPath(AtTile.GetPosition(), TargetTile.GetPosition()));
+        SetPath(AtGrid.FindPath(AtTile.GetPosition(), TargetTile.GetPosition()));
     }
 
     protected void MoveTo(Vector3 targetPosition)
@@ -74,9 +73,8 @@ public abstract class EntityController : MonoBehaviour
         if (Path.Count > 0) StartCoroutine(Move());
     }
 
-    public void Init(GridController Grid, IPathFinder PFAlgorithm)
+    public void Init(GridController Grid)
     {
         this.AtGrid = Grid;
-        this.PathFinderAlgorithm = PFAlgorithm;
     }
 }
