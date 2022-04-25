@@ -7,15 +7,15 @@ public class AstarItem
 {
     public Vertex Vertex { get; set; }
     public Vertex PreviousVertex { get; set; }
-    public float TotalCost { get; set; }
-    public float HeuristicCost { get; set; }
+    public double TotalCost { get; set; }
+    public double HeuristicCost { get; set; }
     public bool Open { get; set; }
 
     public AstarItem(Vertex vertex)
     {
         Vertex = vertex;
         PreviousVertex = null;
-        TotalCost = float.MaxValue;
+        TotalCost = double.MaxValue;
         Open = true;
     }
     public void SetInitial()
@@ -27,39 +27,40 @@ public class AstarItem
 public class Astar : IPathFinder
 {
     private AstarItem[] AuxiliarList;
-    public Graph Graph { get; private set; }
+    public Graph MapGraph { get; private set; }
     private int Width;
-    
+    private Vector2 positionStart;
+
+
     public Astar(Graph Graph, int width)
     {
+        MapGraph = Graph;
         Width = width;
-        Graph = Graph;
     }
     public void InitializeList(int target)
     {
-        Debug.Log(Graph.Size);
-        AuxiliarList = new AstarItem[Graph.Size];
-        for (int i = 0; i < Graph.Size; i++)
+        AuxiliarList = new AstarItem[MapGraph.Size];
+        for (int i = 0; i < MapGraph.Size; i++)
         {
-            Debug.Log(i);
-            Vertex v = Graph.GetVertex(i);
+            Vertex v = MapGraph.GetVertex(i);
             AuxiliarList[v.Id] = new AstarItem(v);
             AuxiliarList[v.Id].HeuristicCost = ManhattanHeuristic(v.Id, target);
         }
     }
     public List<int> FindPath(int start, int target)
     {
+        positionStart = IdToPosition(start);
         InitializeList(target);
-        Vertex vertexTarget = Graph.GetVertex(target);
+        Vertex vertexTarget = MapGraph.GetVertex(target);
 
         AuxiliarList[start].SetInitial();
         while (true)
         {
-            float menor = float.MaxValue;
+            double menor = double.MaxValue;
             AstarItem item = null;
             for (int i = 0; i < AuxiliarList.Length; i++)
             {
-                if (menor > AuxiliarList[i].TotalCost && AuxiliarList[i].Open)
+                if (AuxiliarList[i].Open && menor > AuxiliarList[i].TotalCost)
                 {
                     item = AuxiliarList[i];
                     menor = item.TotalCost;
@@ -76,9 +77,9 @@ public class Astar : IPathFinder
                 if (item.Vertex.HasEdge(d))
                 {
                     Vertex nextVertex = item.Vertex.GetAdjacent(d);
-                    if (AuxiliarList[nextVertex.Id].Open)
+                    AstarItem nextItem = AuxiliarList[nextVertex.Id];
+                    if (nextItem.Open)
                     {
-                        AstarItem nextItem = AuxiliarList[nextVertex.Id];
                         if ((item.Vertex.GetEdge(d).Cost + item.TotalCost) < (nextItem.TotalCost - nextItem.HeuristicCost))
                         {
                             nextItem.TotalCost = item.Vertex.GetEdge(d).Cost + item.TotalCost + nextItem.HeuristicCost;
@@ -87,7 +88,7 @@ public class Astar : IPathFinder
                     }
                 }
             }
-           
+
         }
     }
 
@@ -109,24 +110,44 @@ public class Astar : IPathFinder
         return path;
     }
 
-    public int CountClosed()
+    public List<Vector2> CountClosed()
     {
+        List<Vector2> vet = new List<Vector2>();
         int count = 0;
-        for (int i = 0; i < Graph.Size; i++)
+        for (int i = 0; i < MapGraph.Size; i++)
         {
-            if (!AuxiliarList[i].Open) count++;
+            if (!AuxiliarList[i].Open) 
+            {
+                count++;
+                vet.Add(IdToPosition(i));
+            };
+            
         }
-        return count;
+        Debug.Log("Astar closed nodes: " + count);
+        return vet;
     }
-    public float ManhattanHeuristic(int actual, int target)
+
+    public double ManhattanHeuristic(int actual, int target)
     {
-        int actualX = actual % Width;
-        int actualY = (actual - actualX) / Width;
 
-        int targetX = target % Width;
-        int targetY = (target - targetX) / Width;
+        Vector2 positionActual = IdToPosition(actual);
+        Vector2 positionTarget = IdToPosition(target);
 
-        return Math.Abs(actualX - targetX) + Math.Abs(actualY - targetY);
+        double dx = Math.Abs(positionActual.x - positionTarget.x);
+        double dy = Math.Abs(positionActual.y - positionTarget.y);
+        double heuristic = (dx + dy) * 0.1;
+
+        //Tie-breaker
+        double dxs = Math.Abs(positionStart.x - positionTarget.x);
+        double dys = Math.Abs(positionStart.y - positionTarget.y);
+        double cross = Math.Abs((dx * dys) - (dxs * dy));
+        heuristic += cross * 0.01;
+
+        return heuristic;
+    }
+
+    private Vector2 IdToPosition(int val){
+        return new Vector2((val % Width), Mathf.Floor(val / Width));
     }
 }
 

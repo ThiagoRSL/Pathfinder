@@ -47,9 +47,9 @@ public class Dijkstra : IPathFinder
     public List<int> FindPath(int start, int target)
     {
         Vertex vertexTarget = Graph.GetVertex(target);
-        this.InitializeList();
+        InitializeList();
 
-        this.AuxiliarList[start].TotalCost = 0;
+        AuxiliarList[start].TotalCost = 0;
         while (true)
         {
             int menor = int.MaxValue;

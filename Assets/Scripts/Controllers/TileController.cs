@@ -17,6 +17,11 @@ public class TileController : MonoBehaviour
 
     public void SetAtop(EntityController entity) { Atop = entity; }
 
+    public void Paint(Color32 color)
+    {
+        this.renderer.color = color;
+    }
+
     public void Init(bool hasElevation, int i, int j)
     {
         if (hasElevation)
