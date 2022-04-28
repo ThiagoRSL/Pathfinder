@@ -1,13 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-
+[System.Serializable]
 public class TileController : MonoBehaviour
 {
     [SerializeField] 
     private Color selectedColor;
-    [SerializeField] 
+    [SerializeField]
     private SpriteRenderer renderer;
     [SerializeField] 
     private GameObject highlight, pathHighlight;
@@ -20,6 +21,10 @@ public class TileController : MonoBehaviour
     public void Paint(Color32 color)
     {
         this.renderer.color = color;
+    }
+    public void Write(string text)
+    {
+        //txt.text = text;
     }
 
     public void Init(bool hasElevation, int i, int j)

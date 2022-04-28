@@ -3,72 +3,98 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AstarItem
+public class AstarItem : IEquatable<AstarItem>
 {
     public Vertex Vertex { get; set; }
-    public Vertex PreviousVertex { get; set; }
+    public AstarItem PreviousItem { get; set; }
     public double TotalCost { get; set; }
     public double HeuristicCost { get; set; }
-    public bool Open { get; set; }
 
-    public AstarItem(Vertex vertex)
+    public AstarItem(Vertex vertex, double heuristicCost)
     {
         Vertex = vertex;
-        PreviousVertex = null;
+        PreviousItem = null;
         TotalCost = double.MaxValue;
-        Open = true;
+        HeuristicCost = heuristicCost;
     }
-    public void SetInitial()
+    public void SetTotalCost(double val)
     {
-        TotalCost = 0 + HeuristicCost;
+        TotalCost = val + HeuristicCost;
+    }
+    public override int GetHashCode()
+    {
+        return Vertex.Id;
+    }
+    public bool Equals(AstarItem other)
+    {
+        if (other == null) return false;
+        return (this.Vertex.Id.Equals(other.Vertex.Id));
     }
 }
 
 public class Astar : IPathFinder
 {
-    private AstarItem[] AuxiliarList;
+    private List<AstarItem> ClosedList;
+    private List<AstarItem> OpenList;
     public Graph MapGraph { get; private set; }
     private int Width;
     private Vector2 positionStart;
+    private List<Vector2> ClosedOrder;
 
 
     public Astar(Graph Graph, int width)
     {
         MapGraph = Graph;
         Width = width;
-    }
-    public void InitializeList(int target)
-    {
-        AuxiliarList = new AstarItem[MapGraph.Size];
-        for (int i = 0; i < MapGraph.Size; i++)
-        {
-            Vertex v = MapGraph.GetVertex(i);
-            AuxiliarList[v.Id] = new AstarItem(v);
-            AuxiliarList[v.Id].HeuristicCost = ManhattanHeuristic(v.Id, target);
-        }
+        ClosedOrder = new List<Vector2>();
+        ClosedList = new List<AstarItem>();
+        OpenList = new List<AstarItem>();
     }
     public List<int> FindPath(int start, int target)
     {
+        ClosedOrder.Clear();
+        ClosedList.Clear();
+        OpenList.Clear();
+
         positionStart = IdToPosition(start);
-        InitializeList(target);
+        Vertex vertexStart = MapGraph.GetVertex(start);
         Vertex vertexTarget = MapGraph.GetVertex(target);
 
-        AuxiliarList[start].SetInitial();
+        AstarItem starter = new AstarItem(vertexStart, ManhattanHeuristic(vertexStart.Id, target) * 100);
+        starter.SetTotalCost(0);
+        OpenList.Add(starter);
+        //vertexTarget.DebugVertex();
+
+        double menor;
         while (true)
         {
-            double menor = double.MaxValue;
+            menor = double.MaxValue;
             AstarItem item = null;
-            for (int i = 0; i < AuxiliarList.Length; i++)
+            for (int i = 0; i < OpenList.Count; i++)
             {
-                if (AuxiliarList[i].Open && menor > AuxiliarList[i].TotalCost)
+                //Debug.Log("Menor: " + menor.ToString());
+                //Debug.Log("Cursto " + OpenList[i].Vertex.Id.ToString() + " : " + OpenList[i].TotalCost.ToString());
+                
+                if (menor > OpenList[i].TotalCost)
                 {
-                    item = AuxiliarList[i];
+                    item = OpenList[i];
                     menor = item.TotalCost;
                 }
             }
-            if (item == null) return null;
-            item.Open = false;
-            if (item.Vertex == vertexTarget) return this.GetShortestPath(start, target);
+            if (item == null)
+            {
+                Debug.Log("Deu nulo");
+                return null;
+            }
+            //Debug.Log("Escolhido: " + item.Vertex.Id);
+
+            //Debug
+
+            OpenList.Remove(item);
+            ClosedList.Add(item);
+            ClosedOrder.Add(IdToPosition(item.Vertex.Id));
+
+            if (item.Vertex == vertexTarget) return GetShortestPath();
 
             string[] directions = { "U", "R", "D", "L" };
 
@@ -76,57 +102,47 @@ public class Astar : IPathFinder
             {
                 if (item.Vertex.HasEdge(d))
                 {
+                    //Acumulava infinitamente o custo de maneira que os vertices pertos do ponto inicial sempre tinha menor peso.
+                    //Transformar em dicionarios os custos totais, custo heuristico e o item anterior
                     Vertex nextVertex = item.Vertex.GetAdjacent(d);
-                    AstarItem nextItem = AuxiliarList[nextVertex.Id];
-                    if (nextItem.Open)
+                    AstarItem newItem = new AstarItem(nextVertex, ManhattanHeuristic(nextVertex.Id, target));
+
+                    if (!OpenList.Contains(newItem) && !ClosedList.Contains(newItem))
                     {
-                        if ((item.Vertex.GetEdge(d).Cost + item.TotalCost) < (nextItem.TotalCost - nextItem.HeuristicCost))
-                        {
-                            nextItem.TotalCost = item.Vertex.GetEdge(d).Cost + item.TotalCost + nextItem.HeuristicCost;
-                            nextItem.PreviousVertex = item.Vertex;
-                        }
+                        OpenList.Add(newItem);
+                    }
+                    if ((item.Vertex.GetEdge(d).Cost + item.TotalCost - item.HeuristicCost) < (newItem.TotalCost - newItem.HeuristicCost)) 
+                    {
+                        newItem.SetTotalCost(item.Vertex.GetEdge(d).Cost + item.TotalCost - item.HeuristicCost);
+                        newItem.PreviousItem = item;
                     }
                 }
             }
-
         }
     }
 
-    public List<int> GetShortestPath(int start, int target)
+    public List<int> GetShortestPath()
     {
-        AstarItem originItem = AuxiliarList[start];
-        AstarItem item = AuxiliarList[target];
+        AstarItem originItem = ClosedList[0];
+        AstarItem item = ClosedList[(ClosedList.Count-1)];
 
         List<int> path = new List<int>();
-        Vertex v = AuxiliarList[target].Vertex;
 
         while (item != originItem && item != null)
         {
-            int PreviousId = item.PreviousVertex.Id;
             path.Add(item.Vertex.Id);
-            item = AuxiliarList[PreviousId];
+            item = item.PreviousItem;
         }
         path.Reverse();
+        Debug.Log(OpenList.Count);
+        Debug.Log(ClosedList.Count);
         return path;
     }
 
-    public List<Vector2> CountClosed()
-    {
-        List<Vector2> vet = new List<Vector2>();
-        int count = 0;
-        for (int i = 0; i < MapGraph.Size; i++)
-        {
-            if (!AuxiliarList[i].Open) 
-            {
-                count++;
-                vet.Add(IdToPosition(i));
-            };
-            
-        }
-        Debug.Log("Astar closed nodes: " + count);
-        return vet;
+    public List<Vector2> GetClosedOrder()
+    {        
+        return ClosedOrder;
     }
-
     public double ManhattanHeuristic(int actual, int target)
     {
 
@@ -135,7 +151,7 @@ public class Astar : IPathFinder
 
         double dx = Math.Abs(positionActual.x - positionTarget.x);
         double dy = Math.Abs(positionActual.y - positionTarget.y);
-        double heuristic = (dx + dy) * 0.1;
+        double heuristic = (dx + dy) * 0.01;
 
         //Tie-breaker
         double dxs = Math.Abs(positionStart.x - positionTarget.x);

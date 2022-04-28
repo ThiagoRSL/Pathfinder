@@ -6,6 +6,9 @@ public class PlayerController : EntityController
 {
     [SerializeField] private SpriteRenderer _renderer;
 
+    void Update()
+    {
+    }
     public void Init(TileController tileInit, GridController grid)
     {
         Path = null;

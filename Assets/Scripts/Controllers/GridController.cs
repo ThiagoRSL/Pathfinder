@@ -56,16 +56,16 @@ public class GridController : MonoBehaviour
     {
         Grid = new Grid(width, height, complexity); 
 
-        for (int i = 0; i < width; i++)
+        for (int x = 0; x < width; x++)
         {
-            for (int j = 0; j < height; j++)
+            for (int y = 0; y < height; y++)
             {
-                Vector3 position = new Vector2(i, j);
+                Vector3 position = new Vector2(x, y);
                 var newTile = Instantiate(tilePreFab, position, Quaternion.identity);
                 newTile.transform.SetParent(this.transform, true);
                 newTile.transform.position = position;
-                newTile.name = $"Tile {i} {j}";
-                newTile.Init(UnityEngine.Random.Range(1, 100) > 100 - complexity, i, j);
+                newTile.name = $"Tile {x} {y}";
+                newTile.Init(UnityEngine.Random.Range(1, 100) > 100 - complexity, x, y);
                 SetTileAtPosition(position, newTile);
             }
         }
@@ -102,11 +102,13 @@ public class GridController : MonoBehaviour
         //Debug.Log("Dijkstra closed nodes: " + PFDijkstra.CountClosed().ToString());
 
         List<int> AstarIds = PFAstar.FindPath(startIndex, targetIndex);
-        List<Vector2> LV2 = PFAstar.CountClosed();
+        
+        GameManager.Instance.DebugPath(PFAstar.GetClosedOrder());
+        /*List<Vector2> LV2 = PFAstar.CountClosed();
         for (int i = 0; i < LV2.Count; i++)
         {
             Grid.GetTileAtPosition(LV2[i]).Paint(new Color32(40, 220, 40, 255));
-        } 
+        } */
 
         //List<int> HPAstarIds = PFHPAstar.FindPath(startIndex, targetIndex);
         //Debug.Log("HPAstar closed nodes: " + PFHPAstar.CountClosed().ToString());
@@ -114,15 +116,15 @@ public class GridController : MonoBehaviour
         List<TileController> Path = new List<TileController>();
         while(AstarIds.Count > 0)
         {
-            Path.Add(GetTileAtPosition(Vector2FromIndex(AstarIds[0])));
+            TileController tile = GetTileAtPosition(Vector2FromIndex(AstarIds[0]));
+            Path.Add(tile);
             AstarIds.RemoveAt(0);
         }
 
         return Path;
     }
 
-
-    public int IndexFrom2D(int i, int j) { return (j * Grid.Width) + i; }
-    public int IndexFrom2D(Vector2 v) { return ((int)v.y * Grid.Width) + (int)v.x; }
+    public int IndexFrom2D(int x, int y) { return x + (y * Grid.Height); }
+    public int IndexFrom2D(Vector2 v) { return ((int)v.x ) + (int)v.y * Grid.Height; }
 
 }

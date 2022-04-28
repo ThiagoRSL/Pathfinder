@@ -32,6 +32,14 @@ public class Vertex
         }
         return null;
     }
+    /*public void DebugVertex()
+    {
+        Debug.Log(Id);
+        Debug.Log(GetAdjacent("R").Id);
+        Debug.Log(GetAdjacent("L").Id);
+        Debug.Log(GetAdjacent("U").Id);
+        Debug.Log(GetAdjacent("D").Id);
+    }*/
 }
 
 public class Edge

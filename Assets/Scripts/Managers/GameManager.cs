@@ -109,4 +109,18 @@ public sealed class GameManager : MonoBehaviour
             SetGame();
         }
     }
+    public void DebugPath(List<Vector2> positions)
+    {
+        StartCoroutine(ShowNode(positions));
+    }
+
+    IEnumerator ShowNode(List<Vector2> positions)
+    {
+        while (positions.Count > 0)
+        {
+            Grid.GetTileAtPosition(positions[0]).Paint(new Color32(255, 0, 0, 255));
+            positions.RemoveAt(0);
+            yield return new WaitForSeconds(0.1f);
+        }
+    }
 }

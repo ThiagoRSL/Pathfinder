@@ -25,11 +25,11 @@ public static class GridToGraph
 
     static public void TilesToVertexes(Graph graph)
     {
-        for (int i = 0; i < width; i++)
+        for (int x = 0; x < width; x++)
         {
-            for (int j = 0; j < height; j++)
+            for (int y = 0; y < height; y++)
             {
-                int id = IndexFrom2D(i, j);
+                int id = IndexFrom2D(x, y);
                 graph.SetVertex(id, new Vertex(id));
             }
         }
@@ -38,44 +38,44 @@ public static class GridToGraph
     static public void MapEdges(Graph graph)
     {
         //Mapping the edges
-        for (int i = 0; i < width; i++)
+        for (int x = 0; x < width; x++)
         {
-            for (int j = 0; j < height; j++)
+            for (int y = 0; y < height; y++)
             {
-                if (!graph.GetVertex(IndexFrom2D(i, j)).HasEdge("L") && i > 0)
+                if (!graph.GetVertex(IndexFrom2D(x, y)).HasEdge("L") && x > 0)
                 {
-                    Vertex vertA = graph.GetVertex(IndexFrom2D(i, j));
-                    Vertex vertB = graph.GetVertex(IndexFrom2D(i - 1, j));
+                    Vertex vertA = graph.GetVertex(IndexFrom2D(x, y));
+                    Vertex vertB = graph.GetVertex(IndexFrom2D(x - 1, y));
 
-                    Edge arris = new Edge(vertA, vertB, Unevenness((i - 1), j, i, j));
+                    Edge arris = new Edge(vertA, vertB, Unevenness(x, y, x - 1, y));
                     vertA.SetEdge("L", arris);
                     vertB.SetEdge("R", arris);
                 }
-                if (!graph.GetVertex(IndexFrom2D(i, j)).HasEdge("R") && i < (width - 1))
+                if (!graph.GetVertex(IndexFrom2D(x, y)).HasEdge("R") && x < (width - 1))
                 {
-                    Vertex vertA = graph.GetVertex(IndexFrom2D(i, j));
-                    Vertex vertB = graph.GetVertex(IndexFrom2D(i + 1, j));
+                    Vertex vertA = graph.GetVertex(IndexFrom2D(x, y));
+                    Vertex vertB = graph.GetVertex(IndexFrom2D(x + 1, y));
 
-                    Edge arris = new Edge(vertA, vertB, Unevenness((i + 1), j, i, j));
+                    Edge arris = new Edge(vertA, vertB, Unevenness(x, y, x + 1, y));
                     vertA.SetEdge("R", arris);
                     vertB.SetEdge("L", arris);
                 }
-                if (!graph.GetVertex(IndexFrom2D(i, j)).HasEdge("U") && j < (height - 1))
+                if (!graph.GetVertex(IndexFrom2D(x, y)).HasEdge("U") && y < (height - 1))
                 {
-                    Vertex vertA = graph.GetVertex(IndexFrom2D(i, j));
-                    Vertex vertB = graph.GetVertex(IndexFrom2D(i, j + 1));
+                    Vertex vertA = graph.GetVertex(IndexFrom2D(x, y));
+                    Vertex vertB = graph.GetVertex(IndexFrom2D(x, y + 1));
 
-                    Edge arris = new Edge(vertA, vertB, Unevenness(i, j, i, (j + 1)));
+                    Edge arris = new Edge(vertA, vertB, Unevenness(x, y, x, y + 1));
 
                     vertA.SetEdge("U", arris);
                     vertB.SetEdge("D", arris);
                 }
-                if (!graph.GetVertex(IndexFrom2D(i, j)).HasEdge("D") && j > 0)
+                if (!graph.GetVertex(IndexFrom2D(x, y)).HasEdge("D") && y > 0)
                 {
-                    Vertex vertA = graph.GetVertex(IndexFrom2D(i, j));
-                    Vertex vertB = graph.GetVertex(IndexFrom2D(i, j - 1));
+                    Vertex vertA = graph.GetVertex(IndexFrom2D(x, y));
+                    Vertex vertB = graph.GetVertex(IndexFrom2D(x, y - 1));
 
-                    Edge arris = new Edge(vertA, vertB, Unevenness(i, j, i, (j - 1)));
+                    Edge arris = new Edge(vertA, vertB, Unevenness(x, y, x, y - 1));
 
                     vertA.SetEdge("D", arris);
                     vertB.SetEdge("U", arris);
@@ -83,9 +83,9 @@ public static class GridToGraph
             }
         }
     }
-    static private float Unevenness(float i1, float j1, float i2, float j2)
+    static private float Unevenness(float x1, float y1, float x2, float y2)
     {
-        return TileController.Unevenness(Grid.GetTileAtPosition(new Vector2(i1, j1)), Grid.GetTileAtPosition(new Vector2(i2, j2)));
+        return TileController.Unevenness(Grid.GetTileAtPosition(new Vector2(x1, y1)), Grid.GetTileAtPosition(new Vector2(x2, y2)));
     }
-    static public int IndexFrom2D(int i, int j) { return (j * Grid.Width) + i; }
+    static public int IndexFrom2D(int x, int y) { return x + (y*Grid.Height); }
 }
