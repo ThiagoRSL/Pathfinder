@@ -104,7 +104,7 @@ public sealed class GameManager : MonoBehaviour
     }
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if(scene.name == "GameScene")
+        if (scene.name == "GameScene")
         {
             SetGame();
         }
@@ -116,11 +116,22 @@ public sealed class GameManager : MonoBehaviour
 
     IEnumerator ShowNode(List<Vector2> positions)
     {
+        List<Vector2> PaintedPositions = new List<Vector2>();
         while (positions.Count > 0)
         {
             Grid.GetTileAtPosition(positions[0]).Paint(new Color32(255, 0, 0, 255));
+            PaintedPositions.Add(positions[0]);
             positions.RemoveAt(0);
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.05f);
+        }
+        ClearPositions(PaintedPositions);
+    }
+    public void ClearPositions(List<Vector2> positions)
+    {
+        while (positions.Count > 0)
+        {
+            Grid.GetTileAtPosition(positions[0]).UnPaint();
+            positions.RemoveAt(0);
         }
     }
 }

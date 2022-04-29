@@ -15,12 +15,18 @@ public class TileController : MonoBehaviour
     private EntityController Atop;
     private bool selected;
     private bool path;
+    private Color32 CachedColor;
 
     public void SetAtop(EntityController entity) { Atop = entity; }
 
     public void Paint(Color32 color)
     {
+        CachedColor = renderer.color;
         this.renderer.color = color;
+    }
+    public void UnPaint()
+    {
+        this.renderer.color = CachedColor;
     }
     public void Write(string text)
     {

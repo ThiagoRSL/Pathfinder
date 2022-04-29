@@ -103,7 +103,7 @@ public class GridController : MonoBehaviour
 
         List<int> AstarIds = PFAstar.FindPath(startIndex, targetIndex);
         
-        GameManager.Instance.DebugPath(PFAstar.GetClosedOrder());
+        GameManager.Instance.DebugPath(PFAstar.GetVisited());
         /*List<Vector2> LV2 = PFAstar.CountClosed();
         for (int i = 0; i < LV2.Count; i++)
         {

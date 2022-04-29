@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class Astar : IPathFinder
 {
+    //Debug
+    private List<Vertex> VisitedList;
+    //
     private List<Vertex> ClosedList;
     private List<Vertex> OpenList;
 
@@ -24,6 +27,7 @@ public class Astar : IPathFinder
         MapGraph = Graph;
         Width = width;
 
+        VisitedList = new List<Vertex>();
         OpenList = new List<Vertex>();
         ClosedList = new List<Vertex>();
 
@@ -31,24 +35,6 @@ public class Astar : IPathFinder
         G = new double[Graph.Size];
         H = new double[Graph.Size];
         PreviousVertex = new Vertex[Graph.Size];
-    }
-    public void ResetLists(int start, int target)
-    {
-        OpenList.Clear();
-        ClosedList.Clear();
-
-        for (int i = 0; i < MapGraph.Size; i++)
-        {
-            F[i] = double.MaxValue;
-            G[i] = double.MaxValue;
-            H[i] = ManhattanHeuristic(i, target);
-            PreviousVertex[i] = null;
-        }
-
-        G[start] = 0;
-        F[start] = G[start] + H[start];
-        OpenList.Add(MapGraph.GetVertex(start));
-
     }
     public List<int> FindPath(int start, int target)
     {
@@ -67,7 +53,7 @@ public class Astar : IPathFinder
             int current = int.MaxValue;
             OpenList.ForEach(delegate (Vertex vertex)
             {
-                Debug.Log("Vertex: " + vertex.Id.ToString() + " Heuristic " + H[vertex.Id].ToString() + " Function: " + ManhattanHeuristic(vertex.Id, target).ToString());
+                //Debug.Log("Vertex: " + vertex.Id.ToString() + " Heuristic " + H[vertex.Id].ToString() + " Function: " + ManhattanHeuristic(vertex.Id, target).ToString());
                 if (menor > F[vertex.Id])
                 {
                     current = vertex.Id;
@@ -78,8 +64,8 @@ public class Astar : IPathFinder
 
             if (CurrentVertex == null) return null;
 
-            Debug.Log("Escolhido Vértice: " + CurrentVertex.Id.ToString());
-            Debug.Log(" -------------------------------------------------- ");
+            //Debug.Log("Escolhido Vértice: " + CurrentVertex.Id.ToString());
+            //Debug.Log(" -------------------------------------------------- ");
             OpenList.Remove(CurrentVertex);
             ClosedList.Add(CurrentVertex);
 
@@ -94,6 +80,7 @@ public class Astar : IPathFinder
                     Vertex NextVertex = CurrentVertex.GetAdjacent(d);
 
                     double newCost = G[CurrentVertex.Id] + CurrentVertex.GetEdge(d).Cost;
+
                     if (G[NextVertex.Id] > newCost)
                     {
                         G[NextVertex.Id] = newCost;
@@ -104,35 +91,14 @@ public class Astar : IPathFinder
 
                         if (OpenList.Find(v => v.Id == NextVertex.Id) is null) OpenList.Add(NextVertex);
                     }
+                    if (VisitedList.Find(v => v.Id == NextVertex.Id) is null) VisitedList.Add(NextVertex);
+
                 }
             }
         }
     }
 
-    public List<int> GetShortestPath(int target)
-    {
-        List<int> path = new List<int>();
-        int vertexId = MapGraph.GetVertex(target).Id;
-
-        while (vertexId >= 0 && PreviousVertex.Length > vertexId && PreviousVertex[vertexId] != null )
-        {
-            path.Add(vertexId);
-            vertexId = PreviousVertex[vertexId].Id;
-        }
-
-        path.Reverse();
-        return path;
-    }
-
-    public List<Vector2> GetClosedOrder()
-    {
-        List<Vector2> closeOrder = new List<Vector2>();
-        Debug.Log(ClosedList.Count);
-        ClosedList.ForEach(delegate (Vertex v){
-            closeOrder.Add(IdToPosition(v.Id));
-        });
-        return closeOrder;
-    }
+    //
     public double ManhattanHeuristic(int current, int target)
     {
 
@@ -152,8 +118,73 @@ public class Astar : IPathFinder
         return heuristic;
     }
 
-    private Vector2 IdToPosition(int val){
+    //Debug
+    public List<Vector2> GetVisited()
+    {
+        List<Vector2> list = new List<Vector2>();
+        VisitedList.ForEach(delegate (Vertex v) {
+            list.Add(IdToPosition(v.Id));
+        });
+        return list;
+    }
+    public List<Vector2> GetOpened()
+    {
+        List<Vector2> list = new List<Vector2>();
+        OpenList.ForEach(delegate (Vertex v) {
+            list.Add(IdToPosition(v.Id));
+        });
+        return list;
+    }
+    public List<Vector2> GetClosed()
+    {
+        List<Vector2> list = new List<Vector2>();
+        ClosedList.ForEach(delegate (Vertex v) {
+            list.Add(IdToPosition(v.Id));
+        });
+        return list;
+    }
+    //
+
+    //Auxiliar
+    private void ResetLists(int start, int target)
+    {
+        VisitedList.Clear();
+        OpenList.Clear();
+        ClosedList.Clear();
+
+        for (int i = 0; i < MapGraph.Size; i++)
+        {
+            F[i] = double.MaxValue;
+            G[i] = double.MaxValue;
+            H[i] = ManhattanHeuristic(i, target);
+            PreviousVertex[i] = null;
+        }
+
+        G[start] = 0;
+        F[start] = G[start] + H[start];
+        OpenList.Add(MapGraph.GetVertex(start));
+
+    }
+
+    private List<int> GetShortestPath(int target)
+    {
+        List<int> path = new List<int>();
+        int vertexId = MapGraph.GetVertex(target).Id;
+
+        while (vertexId >= 0 && PreviousVertex.Length > vertexId && PreviousVertex[vertexId] != null)
+        {
+            path.Add(vertexId);
+            vertexId = PreviousVertex[vertexId].Id;
+        }
+
+        path.Reverse();
+        return path;
+    }
+
+    private Vector2 IdToPosition(int val)
+    {
         return new Vector2((val % Width), Mathf.Floor(val / Width));
     }
+
 }
 
