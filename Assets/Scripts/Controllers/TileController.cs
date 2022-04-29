@@ -112,7 +112,7 @@ public class TileController : MonoBehaviour
 
     public static float Unevenness(TileController a, TileController b)
     {
-        return 1+Mathf.Abs(a.GetElevation() - b.GetElevation());
+        return 1 + (Mathf.Abs(a.GetElevation() - b.GetElevation()) * 100);
     }
 }
 

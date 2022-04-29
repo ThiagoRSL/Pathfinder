@@ -3,160 +3,150 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AstarItem : IEquatable<AstarItem>
-{
-    public Vertex Vertex { get; set; }
-    public AstarItem PreviousItem { get; set; }
-    public double TotalCost { get; set; }
-    public double HeuristicCost { get; set; }
-
-    public AstarItem(Vertex vertex, double heuristicCost)
-    {
-        Vertex = vertex;
-        PreviousItem = null;
-        TotalCost = double.MaxValue;
-        HeuristicCost = heuristicCost;
-    }
-    public void SetTotalCost(double val)
-    {
-        TotalCost = val + HeuristicCost;
-    }
-    public override int GetHashCode()
-    {
-        return Vertex.Id;
-    }
-    public bool Equals(AstarItem other)
-    {
-        if (other == null) return false;
-        return (this.Vertex.Id.Equals(other.Vertex.Id));
-    }
-}
-
 public class Astar : IPathFinder
 {
-    private List<AstarItem> ClosedList;
-    private List<AstarItem> OpenList;
+    private List<Vertex> ClosedList;
+    private List<Vertex> OpenList;
+
+    private double[] F; // Total cost
+    private double[] G; // Move cost
+    private double[] H; // Heuristic
+    public Vertex[] PreviousVertex;
+
     public Graph MapGraph { get; private set; }
-    private int Width;
-    private Vector2 positionStart;
+    private Vector2 PositionStart;
     private List<Vector2> ClosedOrder;
+    private int Width;
 
 
     public Astar(Graph Graph, int width)
     {
         MapGraph = Graph;
         Width = width;
-        ClosedOrder = new List<Vector2>();
-        ClosedList = new List<AstarItem>();
-        OpenList = new List<AstarItem>();
+
+        OpenList = new List<Vertex>();
+        ClosedList = new List<Vertex>();
+
+        F = new double[Graph.Size];
+        G = new double[Graph.Size];
+        H = new double[Graph.Size];
+        PreviousVertex = new Vertex[Graph.Size];
+    }
+    public void ResetLists(int start, int target)
+    {
+        OpenList.Clear();
+        ClosedList.Clear();
+
+        for (int i = 0; i < MapGraph.Size; i++)
+        {
+            F[i] = double.MaxValue;
+            G[i] = double.MaxValue;
+            H[i] = ManhattanHeuristic(i, target);
+            PreviousVertex[i] = null;
+        }
+
+        G[start] = 0;
+        F[start] = G[start] + H[start];
+        OpenList.Add(MapGraph.GetVertex(start));
+
     }
     public List<int> FindPath(int start, int target)
     {
-        ClosedOrder.Clear();
-        ClosedList.Clear();
-        OpenList.Clear();
+        Debug.Log(target);
+        ResetLists(start, target);
 
-        positionStart = IdToPosition(start);
-        Vertex vertexStart = MapGraph.GetVertex(start);
+        PositionStart = IdToPosition(start);
+
         Vertex vertexTarget = MapGraph.GetVertex(target);
-
-        AstarItem starter = new AstarItem(vertexStart, ManhattanHeuristic(vertexStart.Id, target) * 100);
-        starter.SetTotalCost(0);
-        OpenList.Add(starter);
-        //vertexTarget.DebugVertex();
+        Vertex CurrentVertex = null;
 
         double menor;
         while (true)
         {
             menor = double.MaxValue;
-            AstarItem item = null;
-            for (int i = 0; i < OpenList.Count; i++)
+            int current = int.MaxValue;
+            OpenList.ForEach(delegate (Vertex vertex)
             {
-                //Debug.Log("Menor: " + menor.ToString());
-                //Debug.Log("Cursto " + OpenList[i].Vertex.Id.ToString() + " : " + OpenList[i].TotalCost.ToString());
-                
-                if (menor > OpenList[i].TotalCost)
+                Debug.Log("Vertex: " + vertex.Id.ToString() + " Heuristic " + H[vertex.Id].ToString() + " Function: " + ManhattanHeuristic(vertex.Id, target).ToString());
+                if (menor > F[vertex.Id])
                 {
-                    item = OpenList[i];
-                    menor = item.TotalCost;
+                    current = vertex.Id;
+                    menor = F[vertex.Id];
+                    CurrentVertex = vertex;
                 }
-            }
-            if (item == null)
-            {
-                Debug.Log("Deu nulo");
-                return null;
-            }
-            //Debug.Log("Escolhido: " + item.Vertex.Id);
+            });
 
-            //Debug
+            if (CurrentVertex == null) return null;
 
-            OpenList.Remove(item);
-            ClosedList.Add(item);
-            ClosedOrder.Add(IdToPosition(item.Vertex.Id));
+            Debug.Log("Escolhido Vértice: " + CurrentVertex.Id.ToString());
+            Debug.Log(" -------------------------------------------------- ");
+            OpenList.Remove(CurrentVertex);
+            ClosedList.Add(CurrentVertex);
 
-            if (item.Vertex == vertexTarget) return GetShortestPath();
+            if (CurrentVertex == vertexTarget) return GetShortestPath(target);
 
             string[] directions = { "U", "R", "D", "L" };
 
             foreach (string d in directions)
             {
-                if (item.Vertex.HasEdge(d))
+                if (CurrentVertex.HasEdge(d))
                 {
-                    //Acumulava infinitamente o custo de maneira que os vertices pertos do ponto inicial sempre tinha menor peso.
-                    //Transformar em dicionarios os custos totais, custo heuristico e o item anterior
-                    Vertex nextVertex = item.Vertex.GetAdjacent(d);
-                    AstarItem newItem = new AstarItem(nextVertex, ManhattanHeuristic(nextVertex.Id, target));
+                    Vertex NextVertex = CurrentVertex.GetAdjacent(d);
 
-                    if (!OpenList.Contains(newItem) && !ClosedList.Contains(newItem))
+                    double newCost = G[CurrentVertex.Id] + CurrentVertex.GetEdge(d).Cost;
+                    if (G[NextVertex.Id] > newCost)
                     {
-                        OpenList.Add(newItem);
-                    }
-                    if ((item.Vertex.GetEdge(d).Cost + item.TotalCost - item.HeuristicCost) < (newItem.TotalCost - newItem.HeuristicCost)) 
-                    {
-                        newItem.SetTotalCost(item.Vertex.GetEdge(d).Cost + item.TotalCost - item.HeuristicCost);
-                        newItem.PreviousItem = item;
+                        G[NextVertex.Id] = newCost;
+
+                        //Works with ManhattanHeuristic(NextVertex.Id, target), but not with H[NextVertex.Id]. Why?
+                        F[NextVertex.Id] = G[NextVertex.Id] + ManhattanHeuristic(NextVertex.Id, target); //H[NextVertex.Id];
+                        PreviousVertex[NextVertex.Id] = CurrentVertex;
+
+                        if (OpenList.Find(v => v.Id == NextVertex.Id) is null) OpenList.Add(NextVertex);
                     }
                 }
             }
         }
     }
 
-    public List<int> GetShortestPath()
+    public List<int> GetShortestPath(int target)
     {
-        AstarItem originItem = ClosedList[0];
-        AstarItem item = ClosedList[(ClosedList.Count-1)];
-
         List<int> path = new List<int>();
+        int vertexId = MapGraph.GetVertex(target).Id;
 
-        while (item != originItem && item != null)
+        while (vertexId >= 0 && PreviousVertex.Length > vertexId && PreviousVertex[vertexId] != null )
         {
-            path.Add(item.Vertex.Id);
-            item = item.PreviousItem;
+            path.Add(vertexId);
+            vertexId = PreviousVertex[vertexId].Id;
         }
+
         path.Reverse();
-        Debug.Log(OpenList.Count);
-        Debug.Log(ClosedList.Count);
         return path;
     }
 
     public List<Vector2> GetClosedOrder()
-    {        
-        return ClosedOrder;
+    {
+        List<Vector2> closeOrder = new List<Vector2>();
+        Debug.Log(ClosedList.Count);
+        ClosedList.ForEach(delegate (Vertex v){
+            closeOrder.Add(IdToPosition(v.Id));
+        });
+        return closeOrder;
     }
-    public double ManhattanHeuristic(int actual, int target)
+    public double ManhattanHeuristic(int current, int target)
     {
 
-        Vector2 positionActual = IdToPosition(actual);
+        Vector2 positionCurrent = IdToPosition(current);
         Vector2 positionTarget = IdToPosition(target);
 
-        double dx = Math.Abs(positionActual.x - positionTarget.x);
-        double dy = Math.Abs(positionActual.y - positionTarget.y);
-        double heuristic = (dx + dy) * 0.01;
+        double dx = Math.Abs(positionCurrent.x - positionTarget.x);
+        double dy = Math.Abs(positionCurrent.y - positionTarget.y);
+        double heuristic = (dx + dy);
 
         //Tie-breaker
-        double dxs = Math.Abs(positionStart.x - positionTarget.x);
-        double dys = Math.Abs(positionStart.y - positionTarget.y);
-        double cross = Math.Abs((dx * dys) - (dxs * dy));
+        double dxs = Math.Abs(PositionStart.x - positionTarget.x);
+        double dys = Math.Abs(PositionStart.y - positionTarget.y);
+        double cross = Math.Abs(dx * dys - dy * dxs);
         heuristic += cross * 0.01;
 
         return heuristic;
